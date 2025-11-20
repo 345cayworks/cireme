@@ -1,0 +1,1 @@
+This package contains the updated upload-image.js function with verbose Cloudinary error output.

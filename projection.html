@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CIREME – Value Projection Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #050505;
+      --bg-alt: #111111;
+      --card: #181818;
+      --gold: #d4af37;
+      --gold-soft: #f5e3a1;
+      --text: #f5f5f5;
+      --muted: #aaaaaa;
+      --danger: #ff5c5c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #222 0, #050505 55%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    a { color: var(--gold-soft); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 5vw;
+      background: linear-gradient(to right, #000000dd, #111111dd);
+      border-bottom: 1px solid #333;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+    .logo {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .logo span { color: var(--text); font-weight: 400; }
+    nav a {
+      margin-left: 1rem;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    main {
+      padding: 2rem 5vw 3rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      color: var(--muted);
+    }
+    .back-link span { font-size: 1rem; }
+
+    h1 {
+      font-size: 2rem;
+      margin: 0 0 0.3rem;
+    }
+    .section-title { color: var(--gold-soft); }
+
+    p.muted { color: var(--muted); font-size: 0.9rem; }
+
+    .card {
+      background: linear-gradient(145deg, #141414, #050505);
+      border-radius: 18px;
+      border: 1px solid #2a2a2a;
+      padding: 1.3rem 1.5rem;
+      margin-top: 1.5rem;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.55);
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      gap: 1.5rem;
+    }
+    .field {
+      margin-bottom: 0.75rem;
+    }
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid #333;
+      background: #050505;
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      border: 1px solid var(--gold);
+      background: #111;
+      color: var(--gold-soft);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, #d4af37, #f7e58b);
+      color: #000;
+      border-color: transparent;
+      box-shadow: 0 0 20px rgba(212,175,55,0.4);
+    }
+    .btn.primary:hover { box-shadow: 0 0 26px rgba(212,175,55,0.7); transform: translateY(-1px); }
+
+    .alert {
+      border-radius: 999px;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+      border: 1px solid #333;
+      background: #0f0f0f;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+    .alert.ok { border-color: #3dd68c88; color: #8df6c4; }
+    .alert.err { border-color: #ff5c5c99; color: #ffb2b2; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+    }
+    th, td {
+      padding: 0.4rem 0.6rem;
+      border-bottom: 1px solid #222;
+      text-align: right;
+    }
+    th:first-child, td:first-child { text-align: left; }
+    th {
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.75rem;
+    }
+
+    @media (max-width: 768px) {
+      .two-col { grid-template-columns: minmax(0, 1fr); }
+      header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+      nav { display: flex; flex-wrap: wrap; }
+    }
+  
+    .site-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:1rem 5vw;
+      background:linear-gradient(to right,#000000dd,#111111dd);
+      border-bottom:1px solid #333;
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter:blur(10px);
+    }
+    .logo{
+      font-weight:700;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:var(--gold);
+    }
+    .logo span{
+      color:var(--text);
+      font-weight:400;
+    }
+    .main-nav{
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+    }
+    .nav-link{
+      margin-left:1rem;
+      font-size:0.9rem;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      position:relative;
+      cursor:pointer;
+      color:var(--muted);
+    }
+    .nav-link:hover{
+      color:var(--gold-soft);
+      text-decoration:none;
+    }
+    .nav-group{
+      position:relative;
+    }
+    .nav-dropdown{
+      position:absolute;
+      top:100%;
+      right:0;
+      min-width:210px;
+      background:#050505;
+      border-radius:10px;
+      border:1px solid #333;
+      box-shadow:0 14px 30px rgba(0,0,0,0.7);
+      padding:0.4rem 0;
+      display:none;
+      z-index:30;
+    }
+    .nav-dropdown a{
+      display:block;
+      padding:0.45rem 0.9rem;
+      margin:0;
+      font-size:0.8rem;
+      text-transform:none;
+      letter-spacing:0.03em;
+      color:var(--text);
+      white-space:nowrap;
+    }
+    .nav-dropdown a:hover{
+      background:rgba(212,175,55,0.12);
+      text-decoration:none;
+    }
+    .nav-group:hover>.nav-dropdown{
+      display:block;
+    }
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo">CIREME <span>MLS</span></div>
+    <nav class="main-nav">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="listings.html" class="nav-link">Listings</a>
+
+      <div class="nav-group">
+        <span class="nav-link nav-label">Tools ▾</span>
+        <div class="nav-dropdown">
+          <a href="mortgage-calculator.html">Mortgage Calculator</a>
+          <a href="projection.html">Value Projections</a>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-link nav-label">Login ▾</span>
+        <div class="nav-dropdown">
+          <a href="agent-dashboard.html">Agent Login</a>
+          <a href="admin-dashboard.html">Admin Login</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <a class="back-link" href="index.html"><span>←</span> Back to home</a>
+
+    <h1 class="section-title">Value Projection Tool</h1>
+    <p class="muted">
+      Estimate how a Cayman Islands property might perform over the next 5 years based on official Lands &amp; Survey RPPI trends.
+      Figures are indicative only and do not constitute a professional valuation.
+    </p>
+
+    <section class="card">
+      <div class="two-col">
+        <div>
+          <div class="field">
+            <label for="district">District</label>
+            <select id="district">
+              <option value="">Select district</option>
+              <option>George Town</option>
+              <option>West Bay</option>
+              <option>Seven Mile Beach</option>
+              <option>Other Cayman Islands</option>
+              <option>Total Cayman Islands</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="ptype">Property type</label>
+            <select id="ptype">
+              <option value="">Any / All</option>
+              <option>Condo</option>
+              <option>Single Family Home</option>
+              <option>Lot / Land</option>
+              <option>Commercial</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="currentPrice">Current listing price (CI$)</label>
+            <input id="currentPrice" type="number" placeholder="650000">
+          </div>
+          <div class="field">
+            <label for="customRate">Override annual growth (optional, %)</label>
+            <input id="customRate" type="number" step="0.1" placeholder="Leave blank to use RPPI">
+          </div>
+          <button type="button" class="btn primary" id="projectBtn">Generate 5-year projection</button>
+          <div id="status" class="alert">Select district + price, then generate.</div>
+        </div>
+
+        <div>
+          <h3 style="margin-top:0;">Projection Summary</h3>
+          <div id="summaryText" class="muted">
+            When connected to RPPI data, this panel shows the historical range used to derive your annual growth rate.
+          </div>
+          <p class="muted" style="margin-top:0.75rem;">
+            <strong>Scenarios:</strong><br>
+            Conservative ≈ base rate − 2% (min 0%)<br>
+            Base ≈ RPPI-derived CAGR<br>
+            Aggressive ≈ base rate + 2%
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:1.5rem;">
+      <h3 style="margin-top:0;">5-year projection (CI$)</h3>
+      <div id="tableContainer" class="muted">
+        No projection yet. Enter details above and click “Generate”.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function formatCurrency(ci) {
+      if (!isFinite(ci)) return "–";
+      return "CI$ " + ci.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    }
+
+    function formatPct(r) {
+      return (r * 100).toFixed(2) + "%";
+    }
+
+    function projectValue(currentPrice, annualRate, years) {
+      return currentPrice * Math.pow(1 + annualRate, years);
+    }
+
+    async function fetchDistrictRatesFromAPI(district, ptype) {
+      const params = new URLSearchParams();
+      params.set("district", district);
+      if (ptype) params.set("ptype", ptype);
+
+      const resp = await fetch("/.netlify/functions/projection-params?" + params.toString());
+      if (!resp.ok) {
+        throw new Error("No RPPI data or API error.");
+      }
+      const data = await resp.json();
+      if (!data.ok) {
+        throw new Error(data.error || "Invalid RPPI response.");
+      }
+      return {
+        base: data.base,
+        conservative: data.conservative,
+        aggressive: data.aggressive,
+        fromYear: data.from_year,
+        toYear: data.to_year,
+        fromIndex: data.from_index,
+        toIndex: data.to_index
+      };
+    }
+
+    async function runProjection() {
+      const district = document.getElementById("district").value;
+      const ptype = document.getElementById("ptype").value;
+      const currentPrice = Number(document.getElementById("currentPrice").value || 0);
+      const customRateInput = document.getElementById("customRate").value;
+      const statusEl = document.getElementById("status");
+      const tableContainer = document.getElementById("tableContainer");
+      const summaryText = document.getElementById("summaryText");
+
+      statusEl.className = "alert";
+
+      if (!district || !currentPrice) {
+        statusEl.className = "alert err";
+        statusEl.textContent = "Please select a district and enter current price.";
+        return;
+      }
+
+      let usedRates;
+      let meta = null;
+
+      try {
+        if (customRateInput) {
+          const r = Number(customRateInput) / 100;
+          usedRates = {
+            base: r,
+            conservative: Math.max(r - 0.02, 0),
+            aggressive: r + 0.02
+          };
+        } else {
+          const apiRates = await fetchDistrictRatesFromAPI(district, ptype);
+          usedRates = {
+            base: apiRates.base,
+            conservative: apiRates.conservative,
+            aggressive: apiRates.aggressive
+          };
+          meta = apiRates;
+        }
+      } catch (err) {
+        console.warn("Projection API error, falling back.", err);
+        const fallbackBase = 0.05;
+        usedRates = {
+          base: fallbackBase,
+          conservative: Math.max(fallbackBase - 0.02, 0),
+          aggressive: fallbackBase + 0.02
+        };
+        meta = null;
+      }
+
+      const { base, conservative, aggressive } = usedRates;
+
+      if (meta) {
+        summaryText.innerHTML = `
+          Using RPPI-derived growth for <strong>${district}</strong>${ptype ? " (" + ptype + ")" : ""}.<br/>
+          Data range: <strong>${meta.fromYear}</strong> (index ${meta.fromIndex.toFixed(1)}) to 
+          <strong>${meta.toYear}</strong> (index ${meta.toIndex.toFixed(1)}).<br/>
+          Conservative: <strong>${formatPct(conservative)}</strong> ·
+          Base: <strong>${formatPct(base)}</strong> ·
+          Aggressive: <strong>${formatPct(aggressive)}</strong>.
+        `;
+      } else {
+        summaryText.innerHTML = `
+          Using fallback / manual growth rates for <strong>${district}</strong>${ptype ? " (" + ptype + ")" : ""}.<br/>
+          Conservative: <strong>${formatPct(conservative)}</strong> ·
+          Base: <strong>${formatPct(base)}</strong> ·
+          Aggressive: <strong>${formatPct(aggressive)}</strong>.
+        `;
+      }
+
+      const years = [1, 2, 3, 4, 5];
+      let rowsHtml = "";
+      for (const y of years) {
+        const cVal = projectValue(currentPrice, conservative, y);
+        const bVal = projectValue(currentPrice, base, y);
+        const aVal = projectValue(currentPrice, aggressive, y);
+        rowsHtml += `
+          <tr>
+            <td>Year ${y}</td>
+            <td>${formatCurrency(cVal)}</td>
+            <td>${formatCurrency(bVal)}</td>
+            <td>${formatCurrency(aVal)}</td>
+          </tr>
+        `;
+      }
+
+      tableContainer.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Conservative</th>
+              <th>Base</th>
+              <th>Aggressive</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      `;
+
+      statusEl.className = "alert ok";
+      statusEl.textContent = "Projection generated. Scroll down to review the 5-year scenarios.";
+    }
+
+    document.getElementById("projectBtn").addEventListener("click", runProjection);
+  </script>
+
+<!-- Injected: preload + detailed projection (no toggle) -->
+<script>
+(function(){
+  function $(id){ return document.getElementById(id); }
+  function qp(name){ return new URLSearchParams(location.search).get(name); }
+  function setIf(id, val){ const el = $(id); if (el && val !== null && val !== undefined && val !== "") el.value = val; }
+  function fmt(n){ return new Intl.NumberFormat('en-KY',{style:'currency',currency:'KYD'}).format(n||0); }
+
+  function monthlyPayment(principal, annualRate, years){
+    const n = Math.max(1, Math.round(years*12));
+    const r = (Number(annualRate)||0) / 100 / 12;
+    if (!r) return principal / n;
+    return principal * (r * Math.pow(1+r, n)) / (Math.pow(1+r, n) - 1);
+  }
+
+  function buildSchedule(principal, annualRate, termYears, months){
+    const r = (Number(annualRate)||0) / 100 / 12;
+    const N = Math.max(1, Math.round(termYears*12));
+    const M = Math.max(1, Math.round(months));
+    const pmt = monthlyPayment(principal, annualRate, termYears);
+    let bal = principal;
+    const rows = [];
+    let tPrin=0, tInt=0;
+
+    for (let m=1; m<=M && m<=N; m++){
+      const interest = bal * r;
+      const principalPay = Math.min(pmt - interest, bal);
+      bal = Math.max(0, bal - principalPay);
+      tPrin += principalPay; tInt += interest;
+      rows.push({ m, interest, principal: principalPay, payment: pmt, balance: bal });
+      if (bal <= 0) break;
+    }
+
+    const years = [];
+    for (let y=1; y<=Math.ceil(rows.length/12); y++){
+      const chunk = rows.slice((y-1)*12, y*12);
+      const p = chunk.reduce((a,c)=>a+c.principal,0);
+      const i = chunk.reduce((a,c)=>a+c.interest,0);
+      const endBal = chunk.length ? chunk[chunk.length-1].balance : bal;
+      years.push({ year: y, principal: p, interest: i, endBalance: endBal });
+    }
+    return { pmt, rows, years, totals: { principal: tPrin, interest: tInt, months: rows.length, endBalance: bal } };
+  }
+
+  function renderTable(years, totals, horizonYears){
+    const head = "<tr><th>Year</th><th style='text-align:right'>Principal</th><th style='text-align:right'>Interest</th><th style='text-align:right'>End Balance</th></tr>";
+    const body = years.map(y => (
+      `<tr><td>${y.year}</td><td style="text-align:right">${fmt(y.principal)}</td><td style="text-align:right">${fmt(y.interest)}</td><td style="text-align:right">${fmt(y.endBalance)}</td></tr>`
+    )).join("");
+    const summary = `
+      <div style="margin-top:.5rem">
+        <div><b>${horizonYears}-Year Principal Paid:</b> ${fmt(totals.principal)}</div>
+        <div><b>${horizonYears}-Year Interest Paid:</b> ${fmt(totals.interest)}</div>
+        <div><b>Balance After ${horizonYears} Years:</b> ${fmt(totals.endBalance)}</div>
+      </div>`;
+    return `<table>${head}${body}</table>${summary}`;
+  }
+
+  function runProjection(){
+    const price = Number(($("price")?.value) || 0);
+    const down  = Number(($("down")?.value) || 0)/100;
+    const rate  = Number(($("rate")?.value) || 0);
+    const term  = Number(($("term")?.value) || 30);
+    const tax   = Number(($("tax")?.value) || 0);
+    const hoa   = Number(($("hoa")?.value) || 0);
+    const ins   = Number(($("ins")?.value) || 0);
+    const horizonYears = Number(qp('horizon') || 5);
+
+    const principal = Math.max(0, price * (1 - down));
+    const baseMonthly = monthlyPayment(principal, rate, term);
+    const schedule = buildSchedule(principal, rate, term, horizonYears*12);
+    const otherMonthly = (tax/12) + hoa + ins;
+    const totalMonthly = baseMonthly + otherMonthly;
+
+    const statusEl = $("status"); if (statusEl) statusEl.textContent = `Projection generated for ~${horizonYears} years.`;
+    const wrap = $("tableWrap");
+    if (wrap) {
+      const head = "<tr><th>Item</th><th style='text-align:right'>Value</th></tr>";
+      const body = [
+        ["Price", fmt(price)],
+        ["Down Payment", fmt(price*down)],
+        ["Loan Amount", fmt(principal)],
+        ["Est. Principal & Interest", fmt(baseMonthly)],
+        ["+ HOA + Insurance + Tax/12", fmt(otherMonthly)],
+        ["≈ Total Monthly", fmt(totalMonthly)]
+      ].map(([k,v])=>`<tr><td>${k}</td><td style="text-align:right">${v}</td></tr>`).join("");
+
+      const yearTable = renderTable(schedule.years, schedule.totals, horizonYears);
+      wrap.innerHTML = `<div class="card"><table>${head}${body}</table></div><div class="card" style="margin-top:.75rem">${yearTable}</div>`;
+    }
+  }
+  window.runProjection = runProjection;
+
+  // Robust auto-fill & autostart
+  function robustAutofill(){
+    function findInput(cands){ for (const sel of cands){ const el = document.querySelector(sel); if (el) return el; } return null; }
+    function setField(cands, val){ const el = findInput(cands); if (el && val !== null && val !== undefined && val !== "") el.value = val; }
+
+    setField(['#price','[name="price"]','[name="list_price"]','input[type="number"][id*="price" i]'], qp('price') ?? "0");
+    setField(['#down','[name="down"]','[name="down_payment"]'], qp('down') ?? "20");
+    setField(['#rate','[name="rate"]','[name="interest_rate"]'], qp('rate') ?? "6.0");
+    setField(['#term','[name="term"]','[name="years"]'], qp('term') ?? "30");
+    setField(['#tax','[name="tax"]','[name="property_tax"]'], qp('tax') ?? "0");
+    setField(['#hoa','[name="hoa"]','[name="hoa_fee"]'], qp('hoa') ?? "0");
+    setField(['#ins','[name="ins"]','[name="insurance"]'], qp('ins') ?? "0");
+
+    const district = qp('district') || 'Cayman Islands';
+    const ptype    = qp('ptype') || 'Property';
+    const desc = document.querySelector('#desc, .projection-desc, .card h2, .card .title');
+    if (desc) desc.innerHTML = `<b>${ptype}</b> in ${district}`;
+  }
+
+  function init(){
+    robustAutofill();
+    const autostart = qp('autostart');
+    if (autostart === '1' || qp('price')) setTimeout(runProjection, 0);
+    const btn = document.getElementById('projectBtn');
+    if (btn && !btn._bound) { btn.addEventListener('click', runProjection); btn._bound = true; }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+
+
+
+<!-- Injected: admin visibility control w/ redirect -->
+<script>
+(function(){
+  function getToken(){
+    try {
+      return localStorage.getItem('jwt')
+          || localStorage.getItem('token')
+          || localStorage.getItem('authToken')
+          || new URLSearchParams(location.search).get('token')
+          || '';
+    } catch { return ''; }
+  }
+  function parseJwt(t){
+    try {
+      const p = t.split('.')[1]; if (!p) return {};
+      return JSON.parse(decodeURIComponent(atob(p.replace(/-/g,'+').replace(/_/g,'/')).split('').map(function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)}).join('')));
+    } catch { return {}; }
+  }
+  function isAdmin(){
+    const tok = getToken();
+    if (!tok) return false;
+    try { const c = parseJwt(tok); return String((c.role||'').toLowerCase()) === 'admin'; } catch { return false; }
+  }
+  function hideNonAdmin(){
+    const adminOnly = document.querySelectorAll('[data-requires=\"admin\"], [data-role=\"admin\"]');
+    adminOnly.forEach(el => { if (!isAdmin()) el.style.display = 'none'; });
+    const needles = [/listing\\s*overview/i, /user\\s*management/i];
+    document.querySelectorAll('a, li, nav *').forEach(el => {
+      const t = (el.textContent||'').trim();
+      if (t && needles.some(rx => rx.test(t)) && !isAdmin()) el.style.display = 'none';
+    });
+  }
+  function guardAdminPage(){
+    const adminPages = [/admin-dashboard\\.html/i, /admin-users\\.html/i];
+    const path = location.pathname.toLowerCase();
+    if (adminPages.some(rx => rx.test(path)) && !isAdmin()) {
+      const next = encodeURIComponent(location.pathname + location.search);
+      location.replace('/admin-login.html?next=' + next);
+    }
+  }
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ hideNonAdmin(); guardAdminPage(); });
+  } else { hideNonAdmin(); guardAdminPage(); }
+})();
+</script>
+
+<!-- Injected: admin logout control -->
+<script>
+(function(){
+  function getToken(){
+    try {
+      return localStorage.getItem('jwt')
+          || localStorage.getItem('token')
+          || localStorage.getItem('authToken')
+          || new URLSearchParams(location.search).get('token')
+          || '';
+    } catch { return ''; }
+  }
+  function parseJwt(t){
+    try {
+      const p = t.split('.')[1]; if (!p) return {};
+      return JSON.parse(decodeURIComponent(atob(p.replace(/-/g,'+').replace(/_/g,'/')).split('').map(function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)}).join('')));
+    } catch { return {}; }
+  }
+  function isAdmin(){
+    const tok = getToken();
+    if (!tok) return false;
+    try { const c = parseJwt(tok); return String((c.role||'').toLowerCase()) === 'admin'; } catch { return false; }
+  }
+
+  function injectLogout(){
+    if (!isAdmin()) return;
+    // Try to place inside an existing nav; otherwise float top-right.
+    let container = document.querySelector('nav, header, .topbar, .navbar');
+    const btn = document.createElement('button');
+    btn.id = 'adminLogoutBtn';
+    btn.textContent = 'Logout';
+    btn.style.cssText = 'margin-left:auto;padding:.35rem .7rem;border:1px solid #2a2a2a;border-radius:8px;background:#222;color:#fff;cursor:pointer';
+    btn.addEventListener('click', async function(){
+      try { await fetch('/.netlify/functions/admin-logout', { method:'POST' }); } catch(e) {}
+      try { localStorage.removeItem('jwt'); localStorage.removeItem('token'); localStorage.removeItem('authToken'); } catch(e){}
+      const url = new URL('/admin-login.html', location.origin);
+      location.replace(url.toString());
+    });
+
+    if (!document.getElementById('adminLogoutBtn')) {
+      if (container) {
+        // Prefer putting it at the end of nav
+        container.appendChild(btn);
+      } else {
+        // Fallback: fixed position
+        btn.style.position = 'fixed';
+        btn.style.top = '10px';
+        btn.style.right = '10px';
+        document.body.appendChild(btn);
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectLogout);
+  } else {
+    injectLogout();
+  }
+})();
+</script>
+</body>
+</html>

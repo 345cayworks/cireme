@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CIREME – Find an Agent</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg: #050505;
+      --card: #181818;
+      --section: #111111;
+      --gold: #d4af37;
+      --gold-soft: #f0d680;
+      --text: #f5f5f5;
+      --muted: #b3b3b3;
+      --border: #2a2a2a;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top left,#202020 0,#050505 55%,#000 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+    .container{
+      max-width:1120px;
+      margin:0 auto;
+      padding:1.5rem 1.25rem 3rem;
+    }
+    a{color:inherit;text-decoration:none;}
+    header{
+      border-bottom:1px solid rgba(212,175,55,0.35);
+      padding-bottom:0.9rem;
+      margin-bottom:1.2rem;
+    }
+    .top-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:0.8rem;
+      font-size:0.85rem;
+    }
+    .home-link a{
+      color:var(--gold-soft);
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+    h1{margin-top:0.7rem;font-size:1.5rem;}
+    .subtitle{margin-top:0.3rem;font-size:0.92rem;color:var(--muted);max-width:40rem;}
+
+    .search-box{
+      margin-top:1.5rem;
+      background:var(--section);
+      border-radius:14px;
+      border:1px solid var(--border);
+      padding:1.25rem 1.5rem;
+    }
+    .search-form{
+      display:grid;
+      grid-template-columns:1fr 1fr auto;
+      gap:1rem;
+      align-items:end;
+    }
+    @media(max-width:768px){
+      .search-form{
+        grid-template-columns:1fr;
+      }
+    }
+    .form-group{
+      display:flex;
+      flex-direction:column;
+      gap:0.4rem;
+    }
+    label{
+      font-size:0.88rem;
+      color:var(--gold-soft);
+      font-weight:500;
+    }
+    input{
+      padding:0.65rem 0.85rem;
+      border-radius:8px;
+      border:1px solid var(--border);
+      background:#0a0a0a;
+      color:var(--text);
+      font-size:0.95rem;
+      outline:none;
+      transition:all 0.2s ease;
+    }
+    input:focus{
+      border-color:var(--gold);
+      box-shadow:0 0 0 2px rgba(212,175,55,0.2);
+      background:#151515;
+    }
+    .btn{
+      padding:0.65rem 1.5rem;
+      border-radius:999px;
+      border:1px solid var(--gold);
+      font-size:0.9rem;
+      color:var(--gold-soft);
+      background:rgba(212,175,55,0.05);
+      cursor:pointer;
+      transition:all .2s ease;
+      white-space:nowrap;
+      font-weight:500;
+    }
+    .btn:hover{
+      background:rgba(212,175,55,0.15);
+      transform:translateY(-1px);
+      box-shadow:0 4px 12px rgba(212,175,55,0.2);
+    }
+
+    .results-section{
+      margin-top:2rem;
+    }
+    .results-meta{
+      font-size:0.88rem;
+      color:var(--muted);
+      margin-bottom:1rem;
+    }
+    .agents-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+      gap:1.25rem;
+    }
+    .agent-card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:1.5rem;
+      transition:all 0.2s ease;
+    }
+    .agent-card:hover{
+      border-color:var(--gold);
+      transform:translateY(-2px);
+      box-shadow:0 8px 24px rgba(0,0,0,0.4);
+    }
+    .agent-header{
+      display:flex;
+      gap:1rem;
+      align-items:start;
+      margin-bottom:1rem;
+    }
+    .agent-photo{
+      width:64px;
+      height:64px;
+      border-radius:50%;
+      background:var(--section);
+      border:2px solid var(--gold);
+      flex-shrink:0;
+      object-fit:cover;
+    }
+    .agent-photo-placeholder{
+      width:64px;
+      height:64px;
+      border-radius:50%;
+      background:linear-gradient(135deg, var(--gold) 0%, #8b7500 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:1.5rem;
+      font-weight:700;
+      color:var(--bg);
+      flex-shrink:0;
+    }
+    .agent-info{
+      flex:1;
+      min-width:0;
+    }
+    .agent-name{
+      font-size:1.15rem;
+      font-weight:600;
+      color:var(--gold-soft);
+      margin-bottom:0.25rem;
+    }
+    .agent-agency{
+      font-size:0.88rem;
+      color:var(--muted);
+      margin-bottom:0.15rem;
+    }
+    .agent-specialization{
+      font-size:0.82rem;
+      color:var(--gold);
+      font-style:italic;
+    }
+    .agent-details{
+      margin-top:1rem;
+      font-size:0.88rem;
+    }
+    .agent-detail-row{
+      display:flex;
+      gap:0.5rem;
+      margin-bottom:0.5rem;
+      color:var(--muted);
+    }
+    .agent-detail-label{
+      font-weight:500;
+      min-width:80px;
+      color:var(--text);
+    }
+    .agent-bio{
+      margin-top:1rem;
+      font-size:0.88rem;
+      line-height:1.5;
+      color:var(--muted);
+      max-height:4.5em;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .no-results{
+      text-align:center;
+      padding:3rem 1rem;
+      color:var(--muted);
+      font-size:1rem;
+    }
+    .loading{
+      text-align:center;
+      padding:2rem;
+      color:var(--gold);
+      font-size:1rem;
+    }
+    .error{
+      background:rgba(255,50,50,0.1);
+      border:1px solid rgba(255,50,50,0.3);
+      color:#ff6b6b;
+      padding:1rem 1.25rem;
+      border-radius:8px;
+      margin-top:1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="top-row">
+        <div class="home-link">
+          <a href="index.html">← Home</a>
+        </div>
+        <div>
+          <a href="listings.html">Browse Listings</a> |
+          <a href="mortgage-calculator.html">Mortgage Calculator</a>
+        </div>
+      </div>
+      <h1>Find a Real Estate Agent</h1>
+      <p class="subtitle">
+        Search our directory of licensed real estate professionals in the Cayman Islands.
+        Find an agent by name or agency to help you with your property needs.
+      </p>
+    </header>
+
+    <div class="search-box">
+      <form class="search-form" id="searchForm">
+        <div class="form-group">
+          <label for="searchInput">Agent Name</label>
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Enter agent name..."
+            autocomplete="off"
+          >
+        </div>
+        <div class="form-group">
+          <label for="agencyInput">Agency</label>
+          <input
+            type="text"
+            id="agencyInput"
+            placeholder="Enter agency name..."
+            autocomplete="off"
+          >
+        </div>
+        <button type="submit" class="btn">Search Agents</button>
+      </form>
+    </div>
+
+    <div class="results-section">
+      <div id="resultsArea"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/.netlify/functions';
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const agencyInput = document.getElementById('agencyInput');
+    const resultsArea = document.getElementById('resultsArea');
+
+    // Load all agents on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadAgents();
+    });
+
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      loadAgents();
+    });
+
+    async function loadAgents() {
+      const search = searchInput.value.trim();
+      const agency = agencyInput.value.trim();
+
+      resultsArea.innerHTML = '<div class="loading">Searching agents...</div>';
+
+      try {
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (agency) params.append('agency', agency);
+        params.append('limit', '50');
+
+        const response = await fetch(`${API_BASE}/find-agents?${params}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to search agents');
+        }
+
+        displayResults(data);
+      } catch (error) {
+        console.error('Search error:', error);
+        resultsArea.innerHTML = `
+          <div class="error">
+            <strong>Error:</strong> ${error.message}
+          </div>
+        `;
+      }
+    }
+
+    function displayResults(data) {
+      const { agents, total } = data;
+
+      if (agents.length === 0) {
+        resultsArea.innerHTML = `
+          <div class="no-results">
+            No agents found matching your search criteria.<br>
+            Try adjusting your search terms or browse all agents.
+          </div>
+        `;
+        return;
+      }
+
+      const resultsHTML = `
+        <div class="results-meta">
+          Found ${total} agent${total !== 1 ? 's' : ''}
+        </div>
+        <div class="agents-grid">
+          ${agents.map(agent => renderAgentCard(agent)).join('')}
+        </div>
+      `;
+
+      resultsArea.innerHTML = resultsHTML;
+    }
+
+    function renderAgentCard(agent) {
+      const initials = agent.full_name
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+
+      const photoHTML = agent.photo_url
+        ? `<img src="${escapeHtml(agent.photo_url)}" alt="${escapeHtml(agent.full_name)}" class="agent-photo">`
+        : `<div class="agent-photo-placeholder">${initials}</div>`;
+
+      return `
+        <div class="agent-card">
+          <div class="agent-header">
+            ${photoHTML}
+            <div class="agent-info">
+              <div class="agent-name">${escapeHtml(agent.full_name)}</div>
+              ${agent.agency_name ? `<div class="agent-agency">${escapeHtml(agent.agency_name)}</div>` : ''}
+              ${agent.specialization ? `<div class="agent-specialization">${escapeHtml(agent.specialization)}</div>` : ''}
+            </div>
+          </div>
+          <div class="agent-details">
+            ${agent.email ? `
+              <div class="agent-detail-row">
+                <span class="agent-detail-label">Email:</span>
+                <a href="mailto:${escapeHtml(agent.email)}" style="color:var(--gold-soft);text-decoration:underline;">
+                  ${escapeHtml(agent.email)}
+                </a>
+              </div>
+            ` : ''}
+            ${agent.phone ? `
+              <div class="agent-detail-row">
+                <span class="agent-detail-label">Phone:</span>
+                <a href="tel:${escapeHtml(agent.phone)}" style="color:var(--gold-soft);">
+                  ${escapeHtml(agent.phone)}
+                </a>
+              </div>
+            ` : ''}
+            ${agent.years_experience ? `
+              <div class="agent-detail-row">
+                <span class="agent-detail-label">Experience:</span>
+                <span>${agent.years_experience} years</span>
+              </div>
+            ` : ''}
+            ${agent.license_number ? `
+              <div class="agent-detail-row">
+                <span class="agent-detail-label">License:</span>
+                <span>${escapeHtml(agent.license_number)}</span>
+              </div>
+            ` : ''}
+          </div>
+          ${agent.bio ? `
+            <div class="agent-bio">
+              ${escapeHtml(agent.bio)}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function escapeHtml(unsafe) {
+      if (!unsafe) return '';
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

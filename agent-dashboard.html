@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CIREME – Agent Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg-dark: #050505;
+      --bg-section: #111111;
+      --bg-card: #181818;
+      --gold: #d4af37;
+      --gold-soft: #f0d680;
+      --text-main: #f5f5f5;
+      --text-muted: #b3b3b3;
+      --border-subtle: #2a2a2a;
+      --transition-fast: 0.2s ease-in-out;
+      --max-width: 1120px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #1a1a1a 0, #050505 50%, #000000 100%);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 1.8rem 1.25rem 3rem;
+    }
+    header {
+      padding: 0 0 1rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+      margin-bottom: 1.5rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: var(--gold);
+      background: radial-gradient(circle, #1b1b1b 0, #050505 60%);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
+    }
+    .brand-text-main {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+    .brand-text-sub {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.18em;
+    }
+    .nav-links {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .nav-links a {
+      color: var(--gold-soft);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1px;
+    }
+    h1 {
+      margin-top: 0.9rem;
+      font-size: 1.6rem;
+    }
+    .subtitle {
+      margin-top: 0.3rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 40rem;
+    }
+    main {
+      margin-top: 1.8rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.35fr);
+      gap: 1.6rem;
+    }
+    @media (max-width: 900px) {
+      main { grid-template-columns: minmax(0, 1fr); }
+    }
+    .card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+      padding: 1.3rem 1.2rem 1.4rem;
+      font-size: 0.9rem;
+    }
+    .card h2 {
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+    .card-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 0.9rem;
+    }
+    form {
+      display: grid;
+      gap: 0.75rem;
+    }
+    label {
+      font-size: 0.85rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.4rem 0.55rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      background: #111;
+      color: var(--text-main);
+      font-size: 0.87rem;
+      outline: none;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--gold);
+      background: #151515;
+      box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.4);
+    }
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+    .input-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 0.75rem;
+    }
+    @media (max-width: 600px) {
+      .input-row { grid-template-columns: minmax(0,1fr); }
+    }
+    .hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--gold);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      color: var(--gold-soft);
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: linear-gradient(120deg, var(--gold), var(--gold-soft));
+      color: #000;
+      border-color: transparent;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+    }
+    .btn-primary:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.7);
+    }
+    .btn:hover {
+      background: rgba(212, 175, 55, 0.08);
+    }
+    .status {
+      font-size: 0.8rem;
+      margin-top: 0.35rem;
+      color: var(--text-muted);
+    }
+    .status.ok { color: var(--gold-soft); }
+    .status.error { color: #ff8080; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.75rem;
+      border-radius: 999px;
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      padding: 0.15rem 0.6rem;
+      color: var(--gold-soft);
+      margin-bottom: 0.4rem;
+    }
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--gold);
+      box-shadow: 0 0 6px rgba(212, 175, 55, 0.8);
+    }
+    .my-listings {
+      margin-top: 1.1rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 0.9rem;
+    }
+    .my-listings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.4rem;
+      font-size: 0.9rem;
+    }
+    .my-listings-count {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .my-listings-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.45rem;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .my-listing-card {
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: #151515;
+      padding: 0.5rem 0.55rem;
+      font-size: 0.8rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      gap: 0.4rem;
+      align-items: center;
+      cursor: pointer;
+    }
+    .my-listing-card:hover {
+      border-color: rgba(212,175,55,0.6);
+      background: #191919;
+    }
+    .my-listing-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+    .my-listing-headline {
+      font-weight: 500;
+    }
+    .my-listing-address {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+    .my-listing-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .my-listing-meta span {
+      margin-right: 0.3rem;
+    }
+    .my-listing-right {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      align-items: flex-end;
+    }
+    .my-listing-price {
+      color: var(--gold-soft);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .status-pill-small {
+      font-size: 0.7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(212,175,55,0.4);
+      padding: 0.05rem 0.45rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold-soft);
+    }
+    .my-listings-empty {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding: 0.4rem 0;
+    }
+    .photos {
+      margin-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 0.8rem;
+    }
+    .photos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.86rem;
+      margin-bottom: 0.45rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .photos-selected {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .photos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+    }
+    .photo-thumb {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #111;
+      height: 70px;
+    }
+    .photo-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .photo-thumb span {
+      position: absolute;
+      bottom: 2px;
+      right: 4px;
+      font-size: 0.65rem;
+      background: rgba(0,0,0,0.6);
+      padding: 0.05rem 0.3rem;
+      border-radius: 999px;
+      color: var(--gold-soft);
+    }
+  
+    .site-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:1rem 5vw;
+      background:linear-gradient(to right,#000000dd,#111111dd);
+      border-bottom:1px solid #333;
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter:blur(10px);
+    }
+    .logo{
+      font-weight:700;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:var(--gold);
+    }
+    .logo span{
+      color:var(--text);
+      font-weight:400;
+    }
+    .main-nav{
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+    }
+    .nav-link{
+      margin-left:1rem;
+      font-size:0.9rem;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      position:relative;
+      cursor:pointer;
+      color:var(--muted);
+    }
+    .nav-link:hover{
+      color:var(--gold-soft);
+      text-decoration:none;
+    }
+    .nav-group{
+      position:relative;
+    }
+    .nav-dropdown{
+      position:absolute;
+      top:100%;
+      right:0;
+      min-width:210px;
+      background:#050505;
+      border-radius:10px;
+      border:1px solid #333;
+      box-shadow:0 14px 30px rgba(0,0,0,0.7);
+      padding:0.4rem 0;
+      display:none;
+      z-index:30;
+    }
+    .nav-dropdown a{
+      display:block;
+      padding:0.45rem 0.9rem;
+      margin:0;
+      font-size:0.8rem;
+      text-transform:none;
+      letter-spacing:0.03em;
+      color:var(--text);
+      white-space:nowrap;
+    }
+    .nav-dropdown a:hover{
+      background:rgba(212,175,55,0.12);
+      text-decoration:none;
+    }
+    .nav-group:hover>.nav-dropdown{
+      display:block;
+    }
+
+    .my-listing-actions{
+      margin-top:0.35rem;
+    }
+    .btn-projection{
+      display:inline-block;
+      padding:0.3rem 0.8rem;
+      border-radius:999px;
+      border:1px solid var(--gold);
+      font-size:0.75rem;
+      color:var(--gold-soft);
+      background:#111;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      transition:background 0.15s ease, transform 0.15s ease;
+    }
+    .btn-projection:hover{
+      background:rgba(212,175,55,0.15);
+      text-decoration:none;
+      transform:translateY(-1px);
+    }
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo">CIREME <span>MLS</span></div>
+    <nav class="main-nav">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="listings.html" class="nav-link">Listings</a>
+
+      <div class="nav-group">
+        <span class="nav-link nav-label">Tools ▾</span>
+        <div class="nav-dropdown">
+          <a href="mortgage-calculator.html">Mortgage Calculator</a>
+          <a href="projection.html">Value Projections</a>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-link nav-label">Login ▾</span>
+        <div class="nav-dropdown">
+          <a href="agent-dashboard.html">Agent Login</a>
+          <a href="admin-dashboard.html">Admin Login</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="page-header">
+      <div class="brand">
+        <div class="logo-mark">CI</div>
+        <div>
+          <div class="brand-text-main">CIREME</div>
+          <div class="brand-text-sub">Agent Dashboard</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <div>
+          <a href="index.html">← Back to Home</a>
+        </div>
+        <div>
+          <a href="listings.html">View Public Listings</a> ·
+          <a href="mortgage-calculator.html">Mortgage Calculator</a>
+        </div>
+      </div>
+      <h1>Agent Login &amp; Listing Management</h1>
+      <p class="subtitle">
+        Log in as a registered CIREME agent to add new listings, and upload listing photos to Cloud storage via Netlify functions.
+      </p>
+    </div>
+
+    <main>
+      <section class="card" id="login-card">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          Agent access
+        </div>
+        <h2>Agent Login</h2>
+        <p class="card-subtitle">
+          Use the email and password assigned to you by the CIREME admin or brokerage.
+        </p>
+
+        <div id="logged-out-view">
+          <form id="login-form">
+            <div>
+              <label for="login-email">Email</label>
+              <input type="email" id="login-email" required placeholder="agent@yourbrokerage.ky">
+            </div>
+            <div>
+              <label for="login-password">Password</label>
+              <input type="password" id="login-password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top:0.4rem;">Log in</button>
+          </form>
+          <div id="login-status" class="status"></div>
+          <p class="hint" style="margin-top:0.75rem;">
+            For this prototype, credentials are stored in the <code>users</code> table of your Neon database.
+          </p>
+        </div>
+
+        <div id="logged-in-view" style="display:none;">
+          <div class="badge">
+            <span class="badge-dot"></span>
+            Logged in
+          </div>
+          <h2 style="margin-bottom:0.2rem;">Welcome, <span id="agent-name"></span></h2>
+          <p class="card-subtitle">
+            Your listings will be associated with your agent profile and brokerage.
+          </p>
+          <p class="hint">
+            Token is stored securely in this browser only (localStorage).
+          </p>
+          <button type="button" id="logout-btn" class="btn" style="margin-top:0.7rem;">Log out</button>
+          <div id="session-status" class="status"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          New listing
+        </div>
+        <h2>Add a New Listing</h2>
+        <p class="card-subtitle">
+          Fill out the key property details below. You must be logged in as an agent to submit.
+        </p>
+
+        <form id="listing-form">
+          <div class="input-row">
+            <div>
+              <label for="property_type">Property type</label>
+              <select id="property_type" required>
+                <option value="">Select type</option>
+                <option value="single_family">Single family</option>
+                <option value="condo">Condo</option>
+                <option value="townhouse">Townhouse</option>
+                <option value="land">Land</option>
+                <option value="commercial">Commercial</option>
+              </select>
+            </div>
+            <div>
+              <label for="district">District</label>
+              <select id="district" required>
+                <option value="">Select district</option>
+                <option value="George Town">George Town</option>
+                <option value="West Bay">West Bay</option>
+                <option value="Bodden Town">Bodden Town</option>
+                <option value="North Side">North Side</option>
+                <option value="East End">East End</option>
+                <option value="Sister Islands">Sister Islands</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="address">Address / Development</label>
+            <input id="address" type="text" placeholder="e.g. Britannia Drive, George Town">
+          </div>
+
+          <div class="input-row">
+            <div>
+              <label for="list_price">List price (CI$)</label>
+              <input id="list_price" type="number" min="0" step="1000" required>
+            </div>
+            <div>
+              <label for="parcel_id">Parcel / Block</label>
+              <input id="parcel_id" type="text" placeholder="e.g. 14D345">
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div>
+              <label for="bedrooms">Bedrooms</label>
+              <input id="bedrooms" type="number" min="0" step="1">
+            </div>
+            <div>
+              <label for="bathrooms">Bathrooms</label>
+              <input id="bathrooms" type="number" min="0" step="0.5">
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div>
+              <label for="square_feet">Interior (sq ft)</label>
+              <input id="square_feet" type="number" min="0" step="50">
+            </div>
+            <div>
+              <label for="year_built">Year built</label>
+              <input id="year_built" type="number" min="1900" max="2100">
+            </div>
+          </div>
+
+          <div>
+            <label for="headline">Headline</label>
+            <input id="headline" type="text" placeholder="e.g. Modern 2-Bedroom Condo in George Town">
+          </div>
+
+          <div>
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="Key selling points, amenities, proximity, etc."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="margin-top:0.4rem;">Submit listing</button>
+        </form>
+
+        <div id="listing-status" class="status"></div>
+
+        <div class="my-listings">
+          <div class="my-listings-header">
+            <span>My listings</span>
+            <span id="my-listings-count" class="my-listings-count"></span>
+          </div>
+          <div id="my-listings" class="my-listings-grid"></div>
+          <div id="my-listings-empty" class="my-listings-empty" style="display:none;">
+            No listings yet under your account. Once you add a property, it will appear here.
+          </div>
+        </div>
+
+        <div class="photos">
+          <div class="photos-header">
+            <span>Listing photos</span>
+            <span id="photos-selected" class="photos-selected">Select a listing above to manage photos.</span>
+          </div>
+          <div class="input-row">
+            <div>
+              <input type="file" id="photo-file" accept="image/*">
+              <div class="hint">Upload JPG/PNG, ideally under 3MB.</div>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:flex-end;">
+              <button id="upload-photo-btn" class="btn" type="button">Upload photo</button>
+            </div>
+          </div>
+          <div id="photo-status" class="status"></div>
+          <div id="photo-grid" class="photos-grid"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const API_AUTH = "/.netlify/functions/auth";
+    const API_LISTINGS = "/.netlify/functions/listings";
+    const API_MY_LISTINGS = "/.netlify/functions/my-listings";
+    const API_MEDIA = "/.netlify/functions/listing-media";
+    const API_UPLOAD = "/.netlify/functions/upload-image";
+
+    const loginForm = document.getElementById("login-form");
+    const loginStatus = document.getElementById("login-status");
+    const loggedOutView = document.getElementById("logged-out-view");
+    const loggedInView = document.getElementById("logged-in-view");
+    const agentNameSpan = document.getElementById("agent-name");
+    const logoutBtn = document.getElementById("logout-btn");
+    const sessionStatus = document.getElementById("session-status");
+
+    const listingForm = document.getElementById("listing-form");
+    const listingStatus = document.getElementById("listing-status");
+
+    const myListingsContainer = document.getElementById("my-listings");
+    const myListingsEmpty = document.getElementById("my-listings-empty");
+    const myListingsCount = document.getElementById("my-listings-count");
+
+    const photosSelected = document.getElementById("photos-selected");
+    const photoFileInput = document.getElementById("photo-file");
+    const uploadPhotoBtn = document.getElementById("upload-photo-btn");
+    const photoStatus = document.getElementById("photo-status");
+    const photoGrid = document.getElementById("photo-grid");
+
+    let selectedListingId = null;
+    let selectedListingHeadline = "";
+
+    function getToken() {
+      return localStorage.getItem("cireme_token");
+    }
+    function getAgentName() {
+      return localStorage.getItem("cireme_agent_name");
+    }
+
+    function setSession(token, agentName) {
+      if (token) localStorage.setItem("cireme_token", token);
+      if (agentName) localStorage.setItem("cireme_agent_name", agentName);
+      updateSessionUI();
+      fetchMyListings();
+    }
+
+    function clearSession() {
+      localStorage.removeItem("cireme_token");
+      localStorage.removeItem("cireme_agent_name");
+      updateSessionUI();
+      clearMyListings();
+      clearPhotos();
+    }
+
+    function updateSessionUI() {
+      const token = getToken();
+      if (token) {
+        const name = getAgentName() || "Agent";
+        agentNameSpan.textContent = name;
+        loggedOutView.style.display = "none";
+        loggedInView.style.display = "block";
+        listingForm.querySelector("button[type='submit']").disabled = false;
+        uploadPhotoBtn.disabled = false;
+      } else {
+        loggedOutView.style.display = "block";
+        loggedInView.style.display = "none";
+        listingForm.querySelector("button[type='submit']").disabled = true;
+        uploadPhotoBtn.disabled = true;
+      }
+    }
+
+    function clearMyListings() {
+      myListingsContainer.innerHTML = "";
+      myListingsCount.textContent = "";
+      myListingsEmpty.style.display = "block";
+    }
+
+    function clearPhotos() {
+      selectedListingId = null;
+      selectedListingHeadline = "";
+      photosSelected.textContent = "Select a listing above to manage photos.";
+      photoGrid.innerHTML = "";
+      photoStatus.textContent = "";
+    }
+
+    function formatCurrencyCI(value) {
+      const n = Number(value);
+      if (!isFinite(n)) return "CI$ –";
+      return "CI$ " + n.toLocaleString("en-KY", { maximumFractionDigits: 0 });
+    }
+
+    async function fetchMyListings() {
+      const token = getToken();
+      if (!token) {
+        clearMyListings();
+        return;
+      }
+
+      myListingsContainer.innerHTML = "";
+      myListingsEmpty.style.display = "none";
+      myListingsCount.textContent = "Loading…";
+
+      try {
+        const res = await fetch(API_MY_LISTINGS, {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          myListingsCount.textContent = "";
+          myListingsEmpty.style.display = "block";
+          return;
+        }
+
+        if (!data || data.length === 0) {
+          myListingsCount.textContent = "0 listings";
+          myListingsEmpty.style.display = "block";
+          return;
+        }
+
+        myListingsCount.textContent = `${data.length} listing${data.length > 1 ? "s" : ""}`;
+
+        data.forEach(l => {
+          const card = document.createElement("div");
+          card.className = "my-listing-card";
+          card.dataset.id = l.id;
+          card.dataset.headline = l.headline || ("Listing #" + l.id);
+
+          const bits = [];
+          if (l.bedrooms != null) bits.push(l.bedrooms + " bed");
+          if (l.bathrooms != null) bits.push(l.bathrooms + " bath");
+          if (l.square_feet != null) bits.push(l.square_feet + " sq ft");
+
+          const price = l.list_price || "";
+          const district = l.district || "";
+          const ptype = l.property_type || "";
+
+          const projectionUrl =
+            `projection.html?district=${encodeURIComponent(district)}&price=${encodeURIComponent(price)}&ptype=${encodeURIComponent(ptype)}`;
+
+          card.innerHTML = `
+            <div class="my-listing-main">
+              <div class="my-listing-headline">${l.headline || "Listing #" + l.id}</div>
+              <div class="my-listing-address">${l.address || "Address on file"}</div>
+              <div class="my-listing-meta">
+                <span>${l.district || "Cayman Islands"}</span>
+                ${bits.length ? "<span>· " + bits.join(" · ") + "</span>" : ""}
+              </div>
+              <div class="my-listing-actions">
+                <a class="btn-projection" href="${projectionUrl}" onclick="event.stopPropagation();">
+                  5-Year Projection
+                </a>
+              </div>
+            </div>
+            <div class="my-listing-right">
+              <div class="my-listing-price">${formatCurrencyCI(l.list_price)}</div>
+              <div class="status-pill-small">${(l.status || "active").toUpperCase()}</div>
+            </div>
+          `;
+          card.addEventListener("click", () => {
+            selectedListingId = l.id;
+            selectedListingHeadline = l.headline || ("Listing #" + l.id);
+            photosSelected.textContent = "Managing photos for: " + selectedListingHeadline + " (ID " + l.id + ")";
+            photoStatus.textContent = "";
+            loadPhotos();
+          });
+
+          myListingsContainer.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+        myListingsCount.textContent = "";
+        myListingsEmpty.style.display = "block";
+      }
+    }
+
+    async function loadPhotos() {
+      photoGrid.innerHTML = "";
+      if (!selectedListingId) {
+        clearPhotos();
+        return;
+      }
+      const token = getToken();
+      if (!token) {
+        photoStatus.textContent = "You must be logged in to view photos.";
+        photoStatus.className = "status error";
+        return;
+      }
+      try {
+        photoStatus.textContent = "Loading photos…";
+        photoStatus.className = "status";
+        const res = await fetch(API_MEDIA + "?listing_id=" + encodeURIComponent(selectedListingId), {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          photoStatus.textContent = data.error || "Error loading photos.";
+          photoStatus.className = "status error";
+          return;
+        }
+        if (!data || data.length === 0) {
+          photoStatus.textContent = "No photos uploaded yet for this listing.";
+          photoStatus.className = "status";
+          return;
+        }
+        photoStatus.textContent = "";
+        data.forEach((m, idx) => {
+          const wrap = document.createElement("div");
+          wrap.className = "photo-thumb";
+          wrap.innerHTML = `
+            <img src="${m.url}" alt="Listing photo ${idx+1}" />
+            <span>#${idx+1}</span>
+          `;
+          photoGrid.appendChild(wrap);
+        });
+      } catch (err) {
+        console.error(err);
+        photoStatus.textContent = "Error connecting to media service.";
+        photoStatus.className = "status error";
+      }
+    }
+
+    uploadPhotoBtn.addEventListener("click", async () => {
+      photoStatus.textContent = "";
+      photoStatus.className = "status";
+      if (!selectedListingId) {
+        photoStatus.textContent = "Select a listing from 'My listings' first.";
+        photoStatus.classList.add("error");
+        return;
+      }
+      const token = getToken();
+      if (!token) {
+        photoStatus.textContent = "You must be logged in to upload photos.";
+        photoStatus.classList.add("error");
+        return;
+      }
+      const file = photoFileInput.files[0];
+      if (!file) {
+        photoStatus.textContent = "Choose an image file to upload.";
+        photoStatus.classList.add("error");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        photoStatus.textContent = "File is too large. Please keep under 5MB.";
+        photoStatus.classList.add("error");
+        return;
+      }
+
+      try {
+        photoStatus.textContent = "Uploading photo…";
+        const b64 = await fileToBase64(file);
+        const res = await fetch(API_UPLOAD, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify({
+            listing_id: selectedListingId,
+            file_name: file.name,
+            content_type: file.type || "image/jpeg",
+            data: b64.split(",")[1]  // strip data: prefix
+          })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          photoStatus.textContent = data.error || "Error uploading photo.";
+          photoStatus.classList.add("error");
+          return;
+        }
+        photoStatus.textContent = "Photo uploaded.";
+        photoStatus.classList.add("ok");
+        photoFileInput.value = "";
+        loadPhotos();
+      } catch (err) {
+        console.error(err);
+        photoStatus.textContent = "Error connecting to upload service.";
+        photoStatus.classList.add("error");
+      }
+    });
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      loginStatus.textContent = "";
+      loginStatus.className = "status";
+
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+
+      if (!email || !password) {
+        loginStatus.textContent = "Please provide both email and password.";
+        loginStatus.classList.add("error");
+        return;
+      }
+
+      try {
+        loginStatus.textContent = "Signing in…";
+        const res = await fetch(API_AUTH, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "login", email, password })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.token) {
+          loginStatus.textContent = data.error || "Login failed. Check your credentials.";
+          loginStatus.classList.add("error");
+          return;
+        }
+
+        setSession(data.token, data.agentName);
+        loginStatus.textContent = "Login successful.";
+        loginStatus.classList.add("ok");
+        sessionStatus.textContent = "";
+      } catch (err) {
+        loginStatus.textContent = "Error connecting to auth service.";
+        loginStatus.classList.add("error");
+      }
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      clearSession();
+      sessionStatus.textContent = "You have been logged out.";
+      sessionStatus.className = "status";
+    });
+
+    listingForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      listingStatus.textContent = "";
+      listingStatus.className = "status";
+
+      const token = getToken();
+      if (!token) {
+        listingStatus.textContent = "You must be logged in as an agent to submit a listing.";
+        listingStatus.classList.add("error");
+        return;
+      }
+
+      const payload = {
+        property_type: document.getElementById("property_type").value || null,
+        district: document.getElementById("district").value || null,
+        address: document.getElementById("address").value || null,
+        parcel_id: document.getElementById("parcel_id").value || null,
+        list_price: Number(document.getElementById("list_price").value || 0),
+        bedrooms: document.getElementById("bedrooms").value || null,
+        bathrooms: document.getElementById("bathrooms").value || null,
+        square_feet: document.getElementById("square_feet").value || null,
+        year_built: document.getElementById("year_built").value || null,
+        headline: document.getElementById("headline").value || null,
+        description: document.getElementById("description").value || null
+      };
+
+      if (!payload.property_type || !payload.district || !payload.list_price) {
+        listingStatus.textContent = "Minimum fields: property type, district, and list price.";
+        listingStatus.classList.add("error");
+        return;
+      }
+
+      try {
+        listingStatus.textContent = "Submitting listing…";
+        const res = await fetch(API_LISTINGS, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          listingStatus.textContent = data.error || "Error creating listing.";
+          listingStatus.classList.add("error");
+          return;
+        }
+
+        listingStatus.textContent = "Listing created successfully.";
+        listingStatus.classList.add("ok");
+        listingForm.reset();
+        fetchMyListings();
+      } catch (err) {
+        listingStatus.textContent = "Error connecting to listing service.";
+        listingStatus.classList.add("error");
+      }
+    });
+
+    // Initialise UI based on any existing token
+    updateSessionUI();
+    if (getToken()) {
+      fetchMyListings();
+    } else {
+      clearMyListings();
+    }
+  </script>
+
+
+<!-- Injected: admin visibility control w/ redirect -->
+<script>
+(function(){
+  function getToken(){
+    try {
+      return localStorage.getItem('jwt')
+          || localStorage.getItem('token')
+          || localStorage.getItem('authToken')
+          || new URLSearchParams(location.search).get('token')
+          || '';
+    } catch { return ''; }
+  }
+  function parseJwt(t){
+    try {
+      const p = t.split('.')[1]; if (!p) return {};
+      return JSON.parse(decodeURIComponent(atob(p.replace(/-/g,'+').replace(/_/g,'/')).split('').map(function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)}).join('')));
+    } catch { return {}; }
+  }
+  function isAdmin(){
+    const tok = getToken();
+    if (!tok) return false;
+    try { const c = parseJwt(tok); return String((c.role||'').toLowerCase()) === 'admin'; } catch { return false; }
+  }
+  function hideNonAdmin(){
+    const adminOnly = document.querySelectorAll('[data-requires=\"admin\"], [data-role=\"admin\"]');
+    adminOnly.forEach(el => { if (!isAdmin()) el.style.display = 'none'; });
+    const needles = [/listing\\s*overview/i, /user\\s*management/i];
+    document.querySelectorAll('a, li, nav *').forEach(el => {
+      const t = (el.textContent||'').trim();
+      if (t && needles.some(rx => rx.test(t)) && !isAdmin()) el.style.display = 'none';
+    });
+  }
+  function guardAdminPage(){
+    const adminPages = [/admin-dashboard\\.html/i, /admin-users\\.html/i];
+    const path = location.pathname.toLowerCase();
+    if (adminPages.some(rx => rx.test(path)) && !isAdmin()) {
+      const next = encodeURIComponent(location.pathname + location.search);
+      location.replace('/admin-login.html?next=' + next);
+    }
+  }
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ hideNonAdmin(); guardAdminPage(); });
+  } else { hideNonAdmin(); guardAdminPage(); }
+})();
+</script>
+
+<!-- Injected: admin logout control -->
+<script>
+(function(){
+  function getToken(){
+    try {
+      return localStorage.getItem('jwt')
+          || localStorage.getItem('token')
+          || localStorage.getItem('authToken')
+          || new URLSearchParams(location.search).get('token')
+          || '';
+    } catch { return ''; }
+  }
+  function parseJwt(t){
+    try {
+      const p = t.split('.')[1]; if (!p) return {};
+      return JSON.parse(decodeURIComponent(atob(p.replace(/-/g,'+').replace(/_/g,'/')).split('').map(function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)}).join('')));
+    } catch { return {}; }
+  }
+  function isAdmin(){
+    const tok = getToken();
+    if (!tok) return false;
+    try { const c = parseJwt(tok); return String((c.role||'').toLowerCase()) === 'admin'; } catch { return false; }
+  }
+
+  function injectLogout(){
+    if (!isAdmin()) return;
+    // Try to place inside an existing nav; otherwise float top-right.
+    let container = document.querySelector('nav, header, .topbar, .navbar');
+    const btn = document.createElement('button');
+    btn.id = 'adminLogoutBtn';
+    btn.textContent = 'Logout';
+    btn.style.cssText = 'margin-left:auto;padding:.35rem .7rem;border:1px solid #2a2a2a;border-radius:8px;background:#222;color:#fff;cursor:pointer';
+    btn.addEventListener('click', async function(){
+      try { await fetch('/.netlify/functions/admin-logout', { method:'POST' }); } catch(e) {}
+      try { localStorage.removeItem('jwt'); localStorage.removeItem('token'); localStorage.removeItem('authToken'); } catch(e){}
+      const url = new URL('/admin-login.html', location.origin);
+      location.replace(url.toString());
+    });
+
+    if (!document.getElementById('adminLogoutBtn')) {
+      if (container) {
+        // Prefer putting it at the end of nav
+        container.appendChild(btn);
+      } else {
+        // Fallback: fixed position
+        btn.style.position = 'fixed';
+        btn.style.top = '10px';
+        btn.style.right = '10px';
+        document.body.appendChild(btn);
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectLogout);
+  } else {
+    injectLogout();
+  }
+})();
+</script>
+</body>
+</html>

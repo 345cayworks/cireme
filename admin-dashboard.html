@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CIREME – Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg-dark: #050505;
+      --bg-card: #181818;
+      --bg-header: #111111;
+      --gold: #d4af37;
+      --gold-soft: #f0d680;
+      --text-main: #f5f5f5;
+      --text-muted: #b3b3b3;
+      --border-subtle: #2a2a2a;
+      --max-width: 1200px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top left,#202020 0,#050505 55%,#000 100%);
+      color:var(--text-main);
+      -webkit-font-smoothing:antialiased;
+    }
+    a{color:inherit;text-decoration:none;}
+    .container{
+      max-width:var(--max-width);
+      margin:0 auto;
+      padding:1.8rem 1.25rem 3rem;
+    }
+    header{
+      padding:0 0 1rem;
+      border-bottom:1px solid rgba(212,175,55,0.35);
+      margin-bottom:1.4rem;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:0.6rem;
+    }
+    .logo-mark{
+      width:32px;height:32px;border-radius:9px;border:2px solid var(--gold);
+      display:flex;align-items:center;justify-content:center;
+      font-size:0.8rem;color:var(--gold);
+      background:radial-gradient(circle,#1b1b1b 0,#050505 60%);
+      box-shadow:0 0 10px rgba(212,175,55,0.35);
+    }
+    .brand-text-main{font-weight:700;letter-spacing:0.08em;font-size:0.9rem;text-transform:uppercase;}
+    .brand-text-sub{font-size:0.7rem;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.18em;}
+    .nav-links{
+      margin-top:0.5rem;
+      font-size:0.85rem;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:1rem;
+      flex-wrap:wrap;
+    }
+    .nav-links a{
+      color:var(--gold-soft);
+      text-decoration:underline;
+      text-underline-offset:3px;
+      text-decoration-thickness:1px;
+    }
+    h1{
+      margin-top:0.9rem;
+      font-size:1.6rem;
+    }
+    .subtitle{
+      margin-top:0.3rem;
+      font-size:0.95rem;
+      color:var(--text-muted);
+      max-width:42rem;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:0.3rem;
+      font-size:0.75rem;
+      border-radius:999px;
+      border:1px solid rgba(212,175,55,0.4);
+      padding:0.15rem 0.6rem;
+      color:var(--gold-soft);
+      margin-bottom:0.4rem;
+    }
+    .badge-dot{
+      width:7px;height:7px;border-radius:999px;background:var(--gold);
+      box-shadow:0 0 6px rgba(212,175,55,0.8);
+    }
+    main{
+      margin-top:1.6rem;
+      display:grid;
+      grid-template-columns:minmax(0,0.95fr) minmax(0,1.4fr);
+      gap:1.5rem;
+    }
+    @media(max-width:900px){main{grid-template-columns:minmax(0,1fr);}}
+    .card{
+      background:var(--bg-card);
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.05);
+      box-shadow:0 10px 30px rgba(0,0,0,0.85);
+      padding:1.3rem 1.2rem 1.4rem;
+      font-size:0.9rem;
+    }
+    .card h2{font-size:1rem;margin-bottom:0.2rem;}
+    .card-subtitle{font-size:0.82rem;color:var(--text-muted);margin-bottom:0.9rem;}
+    form{display:grid;gap:0.75rem;}
+    label{font-size:0.85rem;}
+    input{
+      width:100%;
+      padding:0.4rem 0.55rem;
+      border-radius:8px;
+      border:1px solid var(--border-subtle);
+      background:#111;
+      color:var(--text-main);
+      font-size:0.87rem;
+      outline:none;
+    }
+    input:focus{
+      border-color:var(--gold);
+      background:#151515;
+      box-shadow:0 0 0 1px rgba(212,175,55,0.4);
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:0.45rem 1rem;
+      border-radius:999px;
+      border:1px solid var(--gold);
+      font-size:0.85rem;
+      font-weight:500;
+      cursor:pointer;
+      background:transparent;
+      color:var(--gold-soft);
+      transition:all 0.2s ease-in-out;
+      white-space:nowrap;
+    }
+    .btn-primary{
+      background:linear-gradient(120deg,var(--gold),var(--gold-soft));
+      color:#000;
+      border-color:transparent;
+      box-shadow:0 4px 18px rgba(0,0,0,0.6);
+    }
+    .btn-primary:hover{
+      filter:brightness(1.05);
+      transform:translateY(-1px);
+      box-shadow:0 6px 22px rgba(0,0,0,0.7);
+    }
+    .btn:hover{background:rgba(212,175,55,0.08);}
+    .status{font-size:0.8rem;margin-top:0.35rem;color:var(--text-muted);}
+    .status.ok{color:var(--gold-soft);}
+    .status.error{color:#ff8080;}
+    .filters{
+      display:flex;
+      flex-wrap:wrap;
+      gap:0.5rem;
+      align-items:flex-end;
+      margin-bottom:0.7rem;
+      font-size:0.82rem;
+    }
+    .filters label{
+      display:block;
+      margin-bottom:0.15rem;
+    }
+    .filters select{
+      padding:0.35rem 0.6rem;
+      border-radius:8px;
+      border:1px solid var(--border-subtle);
+      background:#111;
+      color:var(--text-main);
+      font-size:0.82rem;
+    }
+    .table-wrap{
+      margin-top:0.6rem;
+      border-radius:12px;
+      border:1px solid var(--border-subtle);
+      overflow:hidden;
+      background:#101010;
+      max-height:420px;
+      overflow-y:auto;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:0.8rem;
+    }
+    thead{
+      background:#121212;
+      position:sticky;
+      top:0;
+      z-index:5;
+    }
+    th,td{
+      padding:0.45rem 0.55rem;
+      border-bottom:1px solid #222;
+      text-align:left;
+    }
+    th{
+      font-weight:500;
+      color:var(--text-muted);
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      font-size:0.74rem;
+    }
+    tbody tr:nth-child(even){background:#141414;}
+    tbody tr:hover{background:#181818;}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:0.05rem 0.45rem;
+      border-radius:999px;
+      border:1px solid rgba(212,175,55,0.4);
+      font-size:0.7rem;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      color:var(--gold-soft);
+    }
+    .tiny{
+      font-size:0.74rem;
+      color:var(--text-muted);
+    }
+    select.status-select{
+      font-size:0.78rem;
+      padding:0.25rem 0.45rem;
+    }
+  
+    .site-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:1rem 5vw;
+      background:linear-gradient(to right,#000000dd,#111111dd);
+      border-bottom:1px solid #333;
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter:blur(10px);
+    }
+    .logo{
+      font-weight:700;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:var(--gold);
+    }
+    .logo span{
+      color:var(--text);
+      font-weight:400;
+    }
+    .main-nav{
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+    }
+    .nav-link{
+      margin-left:1rem;
+      font-size:0.9rem;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      position:relative;
+      cursor:pointer;
+      color:var(--muted);
+    }
+    .nav-link:hover{
+      color:var(--gold-soft);
+      text-decoration:none;
+    }
+    .nav-group{
+      position:relative;
+    }
+    .nav-dropdown{
+      position:absolute;
+      top:100%;
+      right:0;
+      min-width:210px;
+      background:#050505;
+      border-radius:10px;
+      border:1px solid #333;
+      box-shadow:0 14px 30px rgba(0,0,0,0.7);
+      padding:0.4rem 0;
+      display:none;
+      z-index:30;
+    }
+    .nav-dropdown a{
+      display:block;
+      padding:0.45rem 0.9rem;
+      margin:0;
+      font-size:0.8rem;
+      text-transform:none;
+      letter-spacing:0.03em;
+      color:var(--text);
+      white-space:nowrap;
+    }
+    .nav-dropdown a:hover{
+      background:rgba(212,175,55,0.12);
+      text-decoration:none;
+    }
+    .nav-group:hover>.nav-dropdown{
+      display:block;
+    }
+
+    .agent-forms{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:1.2rem;
+      margin-top:0.6rem;
+    }
+    .agent-form-block h3{
+      font-size:0.9rem;
+      margin-bottom:0.4rem;
+    }
+    .agent-form-block form{
+      margin-top:0.3rem;
+    }
+    .agent-forms .form-row{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:0.6rem;
+    }
+    @media(max-width:640px){
+      .agent-forms .form-row{
+        grid-template-columns:minmax(0,1fr);
+      }
+    }
+</style>
+</head>
+<body data-admin-page>
+  <header class="site-header">
+    <div class="logo">CIREME <span>MLS</span></div>
+    <nav class="main-nav">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="listings.html" class="nav-link">Listings</a>
+
+      <div class="nav-group">
+        <span class="nav-link nav-label">Tools ▾</span>
+        <div class="nav-dropdown">
+          <a href="mortgage-calculator.html">Mortgage Calculator</a>
+          <a href="projection.html">Value Projections</a>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-link nav-label">Login ▾</span>
+        <div class="nav-dropdown">
+          <a href="agent-dashboard.html">Agent Login</a>
+          <a href="admin-dashboard.html">Admin Login</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="page-header">
+      <div class="brand">
+        <div class="logo-mark">CI</div>
+        <div>
+          <div class="brand-text-main">CIREME</div>
+          <div class="brand-text-sub">Admin Dashboard</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <div><a href="index.html">&larr; Back to Home</a></div>
+        <div>
+          <a href="listings.html">Public Listings</a> ·
+          <a href="agent-dashboard.html">Agent Dashboard</a>
+        </div>
+      </div>
+      <h1>Admin Control Panel</h1>
+      <p class="subtitle">
+        Log in as an <strong>admin user</strong> to see all listings in the MLS and update their status (e.g. active, pending, sold, archived).
+      </p>
+    </div>
+
+    <main>
+      <section class="card">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          Admin access
+        </div>
+        <h2>Admin Login</h2>
+        <p class="card-subtitle">
+          Admins use the same auth endpoint as agents, but require the <code>role = 'admin'</code> in the <code>users</code> table.
+        </p>
+        <form id="admin-login-form">
+          <div>
+            <label for="admin-email">Email</label>
+            <input id="admin-email" type="email" required placeholder="admin@yourbrokerage.ky">
+          </div>
+          <div>
+            <label for="admin-password">Password</label>
+            <input id="admin-password" type="password" required placeholder="••••••••">
+          </div>
+          <button type="submit" class="btn btn-primary" style="margin-top:0.4rem;">Log in as admin</button>
+        </form>
+        <div id="admin-login-status" class="status"></div>
+        <p class="tiny" style="margin-top:0.75rem;">
+          To create an admin manually in Neon, insert a row into <code>users</code> with <code>role = 'admin'</code> and a password in
+          <code>password_hash</code> (plain text for prototype).
+        </p>
+      </section>
+
+      <section class="card">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          Listings overview
+        </div>
+        <h2>All Listings</h2>
+        <p class="card-subtitle">
+          Filter, review, and update listing status across the entire MLS. Changes apply immediately.
+        </p>
+
+        <div class="filters">
+          <div>
+            <label for="filter-status">Status</label>
+            <select id="filter-status">
+              <option value="">All</option>
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+              <option value="sold">Sold</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+          <div>
+            <label for="filter-district">District</label>
+            <select id="filter-district">
+              <option value="">All</option>
+              <option value="George Town">George Town</option>
+              <option value="West Bay">West Bay</option>
+              <option value="Bodden Town">Bodden Town</option>
+              <option value="North Side">North Side</option>
+              <option value="East End">East End</option>
+              <option value="Sister Islands">Sister Islands</option>
+            </select>
+          </div>
+          <button type="button" id="refresh-btn" class="btn">Refresh</button>
+        </div>
+
+        <div class="tiny" id="admin-meta"></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Headline</th>
+                <th>District</th>
+                <th>Price</th>
+                <th>Agent</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="admin-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          User management
+        </div>
+        <h2>Agents &amp; Passwords</h2>
+        <p class="card-subtitle">
+          Create or update agents and reset passwords. Admin login is required to use these tools.
+        </p>
+
+        <div class="agent-forms">
+          <div class="agent-form-block">
+            <h3>Create / Update Agent</h3>
+            <form id="create-agent-form">
+              <div class="form-row">
+                <div>
+                  <label for="agent-full-name">Full name</label>
+                  <input id="agent-full-name" type="text" placeholder="Full agent name" required>
+                </div>
+                <div>
+                  <label for="agent-email">Email</label>
+                  <input id="agent-email" type="email" placeholder="agent@agency.ky" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div>
+                  <label for="agent-phone">Phone</label>
+                  <input id="agent-phone" type="text" placeholder="+1 (345) ...">
+                </div>
+                <div>
+                  <label for="agent-password">Password</label>
+                  <input id="agent-password" type="password" placeholder="Temporary password" required>
+                </div>
+              </div>
+              <button type="submit" class="btn">Save agent</button>
+            </form>
+          </div>
+
+          <div class="agent-form-block">
+            <h3>Reset Password</h3>
+            <form id="reset-password-form">
+              <div class="form-row" style="grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);">
+                <div>
+                  <label for="reset-email">User email</label>
+                  <input id="reset-email" type="email" placeholder="user@domain.ky" required>
+                </div>
+                <div>
+                  <label for="reset-password">New password</label>
+                  <input id="reset-password" type="password" placeholder="New password" required>
+                </div>
+              </div>
+              <button type="submit" class="btn">Update password</button>
+            </form>
+          </div>
+        </div>
+
+        <div id="admin-user-status" class="status"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const API_AUTH = "/.netlify/functions/auth";
+    const API_ADMIN_LISTINGS = "/.netlify/functions/admin-listings";
+    const API_ADMIN_USERS = "/.netlify/functions/admin-users";
+
+    const adminLoginForm = document.getElementById("admin-login-form");
+    const adminLoginStatus = document.getElementById("admin-login-status");
+    const adminTbody = document.getElementById("admin-tbody");
+    const adminMeta = document.getElementById("admin-meta");
+    const filterStatus = document.getElementById("filter-status");
+    const filterDistrict = document.getElementById("filter-district");
+    const refreshBtn = document.getElementById("refresh-btn");
+
+    function getAdminToken() {
+      return localStorage.getItem("cireme_admin_token");
+    }
+    function setAdminSession(token) {
+      localStorage.setItem("cireme_admin_token", token);
+    }
+
+    adminLoginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      adminLoginStatus.textContent = "";
+      adminLoginStatus.className = "status";
+      const email = document.getElementById("admin-email").value.trim();
+      const password = document.getElementById("admin-password").value;
+
+      if (!email || !password) {
+        adminLoginStatus.textContent = "Email and password required.";
+        adminLoginStatus.classList.add("error");
+        return;
+      }
+
+      try {
+        adminLoginStatus.textContent = "Signing in…";
+        const res = await fetch(API_AUTH, {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({ action:"login", email, password })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.token) {
+          adminLoginStatus.textContent = data.error || "Login failed.";
+          adminLoginStatus.classList.add("error");
+          return;
+        }
+        // For safety, require admin role in backend; here we just store token.
+        setAdminSession(data.token);
+        adminLoginStatus.textContent = "Admin login successful.";
+        adminLoginStatus.classList.add("ok");
+        loadAdminListings();
+      } catch (err) {
+        console.error(err);
+        adminLoginStatus.textContent = "Error connecting to auth service.";
+        adminLoginStatus.classList.add("error");
+      }
+    });
+
+    function formatCurrencyCI(value) {
+      const n = Number(value);
+      if (!isFinite(n)) return "CI$ –";
+      return "CI$ " + n.toLocaleString("en-KY",{maximumFractionDigits:0});
+    }
+
+    async function loadAdminListings() {
+      const token = getAdminToken();
+      if (!token) {
+        adminMeta.textContent = "Not logged in as admin.";
+        adminTbody.innerHTML = "";
+        return;
+      }
+      adminMeta.textContent = "Loading listings…";
+      adminTbody.innerHTML = "";
+      const params = new URLSearchParams();
+      if (filterStatus.value) params.append("status", filterStatus.value);
+      if (filterDistrict.value) params.append("district", filterDistrict.value);
+      try {
+        const res = await fetch(API_ADMIN_LISTINGS + (params.toString() ? "?" + params.toString() : ""), {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          adminMeta.textContent = data.error || "Error loading listings.";
+          return;
+        }
+        adminMeta.textContent = `Showing ${data.length} listing(s).`;
+        data.forEach(row => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${row.id}</td>
+            <td>${row.headline || "Listing #" + row.id}<div class="tiny">${row.address || ""}</div></td>
+            <td>${row.district || ""}</td>
+            <td>${formatCurrencyCI(row.list_price)}</td>
+            <td><span class="tiny">${row.agent_name || "—"}</span></td>
+            <td>
+              <select class="status-select" data-id="${row.id}">
+                ${["active","pending","sold","archived"].map(s => `
+                  <option value="${s}" ${row.status===s ? "selected" : ""}>${s}</option>
+                `).join("")}
+              </select>
+            </td>
+          `;
+          adminTbody.appendChild(tr);
+        });
+
+        adminTbody.querySelectorAll("select.status-select").forEach(sel => {
+          sel.addEventListener("change", () => updateStatus(sel.dataset.id, sel.value));
+        });
+      } catch (err) {
+        console.error(err);
+        adminMeta.textContent = "Error contacting admin service.";
+      }
+    }
+
+    async function updateStatus(id, status) {
+      const token = getAdminToken();
+      if (!token) return;
+      adminMeta.textContent = "Updating status…";
+      try {
+        const res = await fetch(API_ADMIN_LISTINGS, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+          body: JSON.stringify({ id, status })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          adminMeta.textContent = data.error || "Error updating status.";
+          return;
+        }
+        adminMeta.textContent = "Status updated.";
+      } catch (err) {
+        console.error(err);
+        adminMeta.textContent = "Error updating status.";
+      }
+    }
+
+    filterStatus.addEventListener("change", loadAdminListings);
+    filterDistrict.addEventListener("change", loadAdminListings);
+    refreshBtn.addEventListener("click", loadAdminListings);
+
+    // Try auto-load if token exists
+    if (getAdminToken()) {
+      loadAdminListings();
+    }
+  
+      const createAgentForm = document.getElementById("create-agent-form");
+      const resetPasswordForm = document.getElementById("reset-password-form");
+      const adminUserStatus = document.getElementById("admin-user-status");
+
+      async function requireAdminTokenOrWarn() {
+        const token = getAdminToken();
+        if (!token) {
+          if (adminUserStatus) {
+            adminUserStatus.textContent = "Admin login is required to manage users.";
+            adminUserStatus.className = "status error";
+          }
+          return null;
+        }
+        if (adminUserStatus) {
+          adminUserStatus.textContent = "";
+          adminUserStatus.className = "status";
+        }
+        return token;
+      }
+
+      if (createAgentForm) {
+        createAgentForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const token = await requireAdminTokenOrWarn();
+          if (!token) return;
+
+          adminUserStatus.textContent = "Saving agent…";
+          adminUserStatus.className = "status";
+
+          const full_name = document.getElementById("agent-full-name").value.trim();
+          const email = document.getElementById("agent-email").value.trim();
+          const phone = document.getElementById("agent-phone").value.trim();
+          const password = document.getElementById("agent-password").value;
+
+          if (!full_name || !email || !password) {
+            adminUserStatus.textContent = "Full name, email, and password are required.";
+            adminUserStatus.className = "status error";
+            return;
+          }
+
+          try {
+            const res = await fetch(API_ADMIN_USERS, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+              },
+              body: JSON.stringify({
+                action: "create_agent",
+                full_name,
+                email,
+                phone,
+                password
+              })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+              adminUserStatus.textContent = data.error || "Error creating agent.";
+              adminUserStatus.className = "status error";
+              return;
+            }
+            adminUserStatus.textContent = "Agent saved successfully (" + data.user.email + ").";
+            adminUserStatus.className = "status ok";
+            createAgentForm.reset();
+          } catch (err) {
+            console.error(err);
+            adminUserStatus.textContent = "Error contacting admin user service.";
+            adminUserStatus.className = "status error";
+          }
+        });
+      }
+
+      if (resetPasswordForm) {
+        resetPasswordForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const token = await requireAdminTokenOrWarn();
+          if (!token) return;
+
+          adminUserStatus.textContent = "Updating password…";
+          adminUserStatus.className = "status";
+
+          const email = document.getElementById("reset-email").value.trim();
+          const new_password = document.getElementById("reset-password").value;
+
+          if (!email || !new_password) {
+            adminUserStatus.textContent = "Email and new password are required.";
+            adminUserStatus.className = "status error";
+            return;
+          }
+
+          try {
+            const res = await fetch(API_ADMIN_USERS, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+              },
+              body: JSON.stringify({
+                action: "reset_password",
+                email,
+                new_password
+              })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+              adminUserStatus.textContent = data.error || "Error updating password.";
+              adminUserStatus.className = "status error";
+              return;
+            }
+            adminUserStatus.textContent = "Password updated for " + data.user.email + ".";
+            adminUserStatus.className = "status ok";
+            resetPasswordForm.reset();
+          } catch (err) {
+            console.error(err);
+            adminUserStatus.textContent = "Error contacting admin user service.";
+            adminUserStatus.className = "status error";
+          }
+        });
+      }
+
+</script>
+
+
+<!-- Injected: admin visibility control w/ redirect -->
+<script>
+(function(){
+  function getToken(){
+    try {
+      return localStorage.getItem('jwt')
+          || localStorage.getItem('token')
+          || localStorage.getItem('authToken')
+          || new URLSearchParams(location.search).get('token')
+          || '';
+    } catch { return ''; }
+  }
+  function parseJwt(t){
+    try {
+      const p = t.split('.')[1]; if (!p) return {};
+      return JSON.parse(decodeURIComponent(atob(p.replace(/-/g,'+').replace(/_/g,'/')).split('').map(function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)}).join('')));
+    } catch { return {}; }
+  }
+  function isAdmin(){
+    const tok = getToken();
+    if (!tok) return false;
+    try { const c = parseJwt(tok); return String((c.role||'').toLowerCase()) === 'admin'; } catch { return false; }
+  }
+  function hideNonAdmin(){
+    const adminOnly = document.querySelectorAll('[data-requires=\"admin\"], [data-role=\"admin\"]');
+    adminOnly.forEach(el => { if (!isAdmin()) el.style.display = 'none'; });
+    const needles = [/listing\\s*overview/i, /user\\s*management/i];
+    document.querySelectorAll('a, li, nav *').forEach(el => {
+      const t = (el.textContent||'').trim();
+      if (t && needles.some(rx => rx.test(t)) && !isAdmin()) el.style.display = 'none';
+    });
+  }
+  function guardAdminPage(){
+    const adminPages = [/admin-dashboard\\.html/i, /admin-users\\.html/i];
+    const path = location.pathname.toLowerCase();
+    if (adminPages.some(rx => rx.test(path)) && !isAdmin()) {
+      const next = encodeURIComponent(location.pathname + location.search);
+      location.replace('/admin-login.html?next=' + next);
+    }
+  }
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ hideNonAdmin(); guardAdminPage(); });
+  } else { hideNonAdmin(); guardAdminPage(); }
+})();
+</script>
+
+<!-- Injected: admin logout control -->
+<script>
+(function(){
+  function getToken(){
+    try {
+      return localStorage.getItem('jwt')
+          || localStorage.getItem('token')
+          || localStorage.getItem('authToken')
+          || new URLSearchParams(location.search).get('token')
+          || '';
+    } catch { return ''; }
+  }
+  function parseJwt(t){
+    try {
+      const p = t.split('.')[1]; if (!p) return {};
+      return JSON.parse(decodeURIComponent(atob(p.replace(/-/g,'+').replace(/_/g,'/')).split('').map(function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)}).join('')));
+    } catch { return {}; }
+  }
+  function isAdmin(){
+    const tok = getToken();
+    if (!tok) return false;
+    try { const c = parseJwt(tok); return String((c.role||'').toLowerCase()) === 'admin'; } catch { return false; }
+  }
+
+  function injectLogout(){
+    if (!isAdmin()) return;
+    // Try to place inside an existing nav; otherwise float top-right.
+    let container = document.querySelector('nav, header, .topbar, .navbar');
+    const btn = document.createElement('button');
+    btn.id = 'adminLogoutBtn';
+    btn.textContent = 'Logout';
+    btn.style.cssText = 'margin-left:auto;padding:.35rem .7rem;border:1px solid #2a2a2a;border-radius:8px;background:#222;color:#fff;cursor:pointer';
+    btn.addEventListener('click', async function(){
+      try { await fetch('/.netlify/functions/admin-logout', { method:'POST' }); } catch(e) {}
+      try { localStorage.removeItem('jwt'); localStorage.removeItem('token'); localStorage.removeItem('authToken'); } catch(e){}
+      const url = new URL('/admin-login.html', location.origin);
+      location.replace(url.toString());
+    });
+
+    if (!document.getElementById('adminLogoutBtn')) {
+      if (container) {
+        // Prefer putting it at the end of nav
+        container.appendChild(btn);
+      } else {
+        // Fallback: fixed position
+        btn.style.position = 'fixed';
+        btn.style.top = '10px';
+        btn.style.right = '10px';
+        document.body.appendChild(btn);
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectLogout);
+  } else {
+    injectLogout();
+  }
+})();
+</script>
+</body>
+</html>

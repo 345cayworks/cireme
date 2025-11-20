@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CIREME – Cayman Islands Mortgage Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg-dark:#050505;
+      --bg-section:#111111;
+      --bg-card:#181818;
+      --gold:#d4af37;
+      --gold-soft:#f0d680;
+      --text-main:#f5f5f5;
+      --text-muted:#b3b3b3;
+      --border-subtle:#2a2a2a;
+      --max-width:900px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top left,#1a1a1a 0,#050505 50%,#000 100%);
+      color:var(--text-main);
+      line-height:1.6;
+      -webkit-font-smoothing:antialiased;
+    }
+    a{color:inherit;text-decoration:none;}
+    .container{
+      max-width:var(--max-width);
+      margin:0 auto;
+      padding:1.8rem 1.25rem 3rem;
+    }
+    header{
+      padding:0 0 0.8rem;
+      border-bottom:1px solid rgba(212,175,55,0.3);
+      margin-bottom:1.4rem;
+    }
+    .home-link{
+      font-size:0.85rem;
+      margin-bottom:0.6rem;
+    }
+    .home-link a{
+      color:var(--gold-soft);
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:0.6rem;
+    }
+    .logo-mark{
+      width:32px;height:32px;border-radius:9px;border:2px solid var(--gold);
+      display:flex;align-items:center;justify-content:center;
+      font-size:0.8rem;color:var(--gold);
+      background:radial-gradient(circle,#1b1b1b 0,#050505 60%);
+      box-shadow:0 0 10px rgba(212,175,55,0.35);
+    }
+    .brand-text-main{font-weight:700;letter-spacing:0.08em;font-size:0.9rem;text-transform:uppercase;}
+    .brand-text-sub{font-size:0.7rem;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.18em;}
+    h1{margin-top:1rem;font-size:1.6rem;}
+    .subtitle{margin-top:0.4rem;font-size:0.95rem;color:var(--text-muted);max-width:36rem;}
+    .subtitle strong{color:var(--gold-soft);}
+    .note{font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem;}
+    .note strong{color:var(--gold-soft);}
+    main{margin-top:1.8rem;}
+    .card{
+      background:var(--bg-card);
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,0.05);
+      box-shadow:0 12px 30px rgba(0,0,0,0.8);
+      padding:1.5rem 1.4rem 1.7rem;
+      display:grid;
+      grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);
+      gap:1.8rem;
+    }
+    @media(max-width:800px){.card{grid-template-columns:minmax(0,1fr);}}
+    .section-title{font-size:1.05rem;margin-bottom:0.3rem;}
+    .section-subtitle{font-size:0.87rem;color:var(--text-muted);margin-bottom:1rem;}
+    form{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:0.9rem 1rem;
+    }
+    @media(max-width:600px){form{grid-template-columns:1fr;}}
+    .form-group{display:flex;flex-direction:column;gap:0.2rem;font-size:0.85rem;}
+    label{color:var(--text-main);}
+    .hint{font-size:0.74rem;color:var(--text-muted);}
+    input[type="number"]{
+      padding:0.45rem 0.5rem;
+      border-radius:8px;
+      border:1px solid var(--border-subtle);
+      background:#111;
+      color:var(--text-main);
+      font-size:0.9rem;
+      outline:none;
+    }
+    input[type="number"]:focus{
+      border-color:var(--gold);
+      box-shadow:0 0 0 1px rgba(212,175,55,0.4);
+      background:#151515;
+    }
+    .input-prefix{
+      display:flex;
+      align-items:center;
+      gap:0.35rem;
+    }
+    .input-prefix span{
+      font-size:0.83rem;
+      color:var(--gold-soft);
+      padding:0.2rem 0.45rem;
+      border-radius:6px;
+      border:1px solid rgba(212,175,55,0.5);
+      background:rgba(0,0,0,0.6);
+    }
+    .btn{
+      margin-top:0.4rem;
+      grid-column:1 / -1;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:0.55rem 1.2rem;
+      border-radius:999px;
+      border:none;
+      font-size:0.9rem;
+      font-weight:500;
+      cursor:pointer;
+      background:linear-gradient(120deg,var(--gold),var(--gold-soft));
+      color:#000;
+      box-shadow:0 4px 18px rgba(0,0,0,0.6);
+    }
+    .btn:hover{
+      filter:brightness(1.08);
+      transform:translateY(-1px);
+      box-shadow:0 6px 20px rgba(0,0,0,0.7);
+    }
+    .results{
+      border-radius:16px;
+      border:1px solid rgba(212,175,55,0.4);
+      background:radial-gradient(circle at top,#262626 0,#111 50%,#050505 100%);
+      padding:1.1rem 1rem 1.2rem;
+      font-size:0.9rem;
+    }
+    .results-header{
+      font-size:0.82rem;
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+      color:var(--gold-soft);
+      margin-bottom:0.4rem;
+    }
+    .result-main{font-size:1.1rem;font-weight:600;margin-bottom:0.4rem;}
+    .result-main span{color:var(--gold-soft);}
+    .result-sub{font-size:0.8rem;color:var(--text-muted);margin-bottom:0.8rem;}
+    .results-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:0.6rem 1rem;
+      font-size:0.8rem;
+    }
+    @media(max-width:600px){.results-grid{grid-template-columns:1fr;}}
+    .results-item{display:flex;justify-content:space-between;gap:0.6rem;}
+    .results-label{color:var(--text-muted);}
+    .results-value{
+      color:var(--gold-soft);
+      font-weight:500;
+      text-align:right;
+      white-space:nowrap;
+    }
+    .disclaimer{
+      font-size:0.76rem;
+      color:var(--text-muted);
+      margin-top:0.6rem;
+    }
+    footer{
+      text-align:center;
+      font-size:0.75rem;
+      color:var(--text-muted);
+      margin-top:2rem;
+      padding-top:0.9rem;
+      border-top:1px solid var(--border-subtle);
+    }
+  
+    .site-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:1rem 5vw;
+      background:linear-gradient(to right,#000000dd,#111111dd);
+      border-bottom:1px solid #333;
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter:blur(10px);
+    }
+    .logo{
+      font-weight:700;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:var(--gold);
+    }
+    .logo span{
+      color:var(--text);
+      font-weight:400;
+    }
+    .main-nav{
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+    }
+    .nav-link{
+      margin-left:1rem;
+      font-size:0.9rem;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      position:relative;
+      cursor:pointer;
+      color:var(--muted);
+    }
+    .nav-link:hover{
+      color:var(--gold-soft);
+      text-decoration:none;
+    }
+    .nav-group{
+      position:relative;
+    }
+    .nav-dropdown{
+      position:absolute;
+      top:100%;
+      right:0;
+      min-width:210px;
+      background:#050505;
+      border-radius:10px;
+      border:1px solid #333;
+      box-shadow:0 14px 30px rgba(0,0,0,0.7);
+      padding:0.4rem 0;
+      display:none;
+      z-index:30;
+    }
+    .nav-dropdown a{
+      display:block;
+      padding:0.45rem 0.9rem;
+      margin:0;
+      font-size:0.8rem;
+      text-transform:none;
+      letter-spacing:0.03em;
+      color:var(--text);
+      white-space:nowrap;
+    }
+    .nav-dropdown a:hover{
+      background:rgba(212,175,55,0.12);
+      text-decoration:none;
+    }
+    .nav-group:hover>.nav-dropdown{
+      display:block;
+    }
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo">CIREME <span>MLS</span></div>
+    <nav class="main-nav">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="listings.html" class="nav-link">Listings</a>
+
+      <div class="nav-group">
+        <span class="nav-link nav-label">Tools ▾</span>
+        <div class="nav-dropdown">
+          <a href="mortgage-calculator.html">Mortgage Calculator</a>
+          <a href="projection.html">Value Projections</a>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-link nav-label">Login ▾</span>
+        <div class="nav-dropdown">
+          <a href="agent-dashboard.html">Agent Login</a>
+          <a href="admin-dashboard.html">Admin Login</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="page-header">
+      <div class="home-link">
+        <a href="index.html">&larr; Back to Home</a>
+      </div>
+      <div class="brand">
+        <div class="logo-mark">CI</div>
+        <div>
+          <div class="brand-text-main">CIREME</div>
+          <div class="brand-text-sub">Mortgage Calculator</div>
+        </div>
+      </div>
+      <h1>Cayman Islands Mortgage Calculator</h1>
+      <p class="subtitle">
+        Estimate your monthly mortgage payment in <strong>CI$</strong> based on property price, down payment,
+        interest rate, and loan term. Optional fields help you include strata, taxes, and insurance.
+      </p>
+      <p class="note">
+        <strong>Note:</strong> This tool is for illustration only and does not constitute financial advice.
+        Please confirm terms and costs with your bank or financial advisor.
+      </p>
+    </div>
+
+    <main>
+      <div class="card">
+        <section aria-label="Inputs">
+          <h2 class="section-title">Enter your details</h2>
+          <p class="section-subtitle">Adjust values to explore different financing scenarios.</p>
+
+          <form id="mortgage-form">
+            <div class="form-group">
+              <label for="price">Property price (CI$)</label>
+              <div class="input-prefix">
+                <span>CI$</span>
+                <input id="price" type="number" min="0" step="1000" value="650000" required>
+              </div>
+              <div class="hint">Total purchase price.</div>
+            </div>
+
+            <div class="form-group">
+              <label for="downPayment">Down payment (CI$)</label>
+              <div class="input-prefix">
+                <span>CI$</span>
+                <input id="downPayment" type="number" min="0" step="1000" value="130000">
+              </div>
+              <div class="hint">Upfront amount (e.g. 20%).</div>
+            </div>
+
+            <div class="form-group">
+              <label for="interest">Interest rate (per year, %)</label>
+              <input id="interest" type="number" min="0" step="0.01" value="6.50">
+              <div class="hint">Annual rate, e.g. 6.5</div>
+            </div>
+
+            <div class="form-group">
+              <label for="term">Loan term (years)</label>
+              <input id="term" type="number" min="1" step="1" value="25">
+              <div class="hint">Length of mortgage.</div>
+            </div>
+
+            <div class="form-group">
+              <label for="taxes">Property taxes (per year, CI$)</label>
+              <div class="input-prefix">
+                <span>CI$</span>
+                <input id="taxes" type="number" min="0" step="100" value="0">
+              </div>
+              <div class="hint">Enter 0 if not applicable.</div>
+            </div>
+
+            <div class="form-group">
+              <label for="insurance">Insurance (per year, CI$)</label>
+              <div class="input-prefix">
+                <span>CI$</span>
+                <input id="insurance" type="number" min="0" step="100" value="2000">
+              </div>
+              <div class="hint">Building / contents insurance.</div>
+            </div>
+
+            <div class="form-group">
+              <label for="hoa">Strata / HOA (per month, CI$)</label>
+              <div class="input-prefix">
+                <span>CI$</span>
+                <input id="hoa" type="number" min="0" step="10" value="0">
+              </div>
+              <div class="hint">Monthly strata or HOA fee.</div>
+            </div>
+
+            <button id="calculate-btn" type="submit" class="btn">Calculate payment</button>
+          </form>
+        </section>
+
+        <aside class="results" aria-label="Results">
+          <div class="results-header">Payment estimate</div>
+          <div class="result-main">
+            Estimated monthly payment: <span id="monthly-total">CI$ 0.00</span>
+          </div>
+          <p class="result-sub" id="summary-text">
+            Enter your details to see a breakdown of principal &amp; interest plus other monthly costs.
+          </p>
+          <div class="results-grid">
+            <div class="results-item">
+              <span class="results-label">Loan amount</span>
+              <span class="results-value" id="loan-amount">CI$ 0.00</span>
+            </div>
+            <div class="results-item">
+              <span class="results-label">Principal &amp; interest / month</span>
+              <span class="results-value" id="pi-payment">CI$ 0.00</span>
+            </div>
+            <div class="results-item">
+              <span class="results-label">Taxes / month</span>
+              <span class="results-value" id="taxes-monthly">CI$ 0.00</span>
+            </div>
+            <div class="results-item">
+              <span class="results-label">Insurance / month</span>
+              <span class="results-value" id="insurance-monthly">CI$ 0.00</span>
+            </div>
+            <div class="results-item">
+              <span class="results-label">Strata / HOA / month</span>
+              <span class="results-value" id="hoa-monthly">CI$ 0.00</span>
+            </div>
+            <div class="results-item">
+              <span class="results-label">Total over full term</span>
+              <span class="results-value" id="total-over-term">CI$ 0.00</span>
+            </div>
+          </div>
+          <p class="disclaimer">
+            This calculator assumes a standard amortising mortgage with fixed interest and monthly payments.
+            Actual payments may differ based on bank fees, closing costs, and rate changes.
+          </p>
+        </aside>
+      </div>
+    </main>
+
+    <footer>
+      &copy; <span id="year"></span> CIREME – Cayman Islands Real Estate Market Explorer. All estimates in CI$.
+    </footer>
+  </div>
+
+  <script>
+    function formatCurrency(amount){
+      if(isNaN(amount) || !isFinite(amount)) return "CI$ 0.00";
+      return "CI$ " + amount.toLocaleString("en-KY",{minimumFractionDigits:2,maximumFractionDigits:2});
+    }
+
+    function calculate(){
+      const price = parseFloat(document.getElementById("price").value) || 0;
+      const down = parseFloat(document.getElementById("downPayment").value) || 0;
+      const rateAnnual = parseFloat(document.getElementById("interest").value) || 0;
+      const years = parseInt(document.getElementById("term").value,10) || 0;
+      const taxesYear = parseFloat(document.getElementById("taxes").value) || 0;
+      const insuranceYear = parseFloat(document.getElementById("insurance").value) || 0;
+      const hoaMonth = parseFloat(document.getElementById("hoa").value) || 0;
+
+      const loanAmount = Math.max(price - down,0);
+      const months = years * 12;
+      const monthlyRate = rateAnnual>0 ? (rateAnnual/100)/12 : 0;
+
+      let monthlyPI = 0;
+      if(loanAmount>0 && months>0){
+        if(monthlyRate === 0){
+          monthlyPI = loanAmount / months;
+        }else{
+          const pow = Math.pow(1 + monthlyRate, months);
+          monthlyPI = loanAmount * monthlyRate * pow / (pow - 1);
+        }
+      }
+
+      const taxesMonthly = taxesYear / 12;
+      const insuranceMonthly = insuranceYear / 12;
+      const monthlyTotal = monthlyPI + taxesMonthly + insuranceMonthly + hoaMonth;
+      const totalOverTerm = monthlyTotal * months;
+
+      document.getElementById("loan-amount").textContent = formatCurrency(loanAmount);
+      document.getElementById("pi-payment").textContent = formatCurrency(monthlyPI);
+      document.getElementById("taxes-monthly").textContent = formatCurrency(taxesMonthly);
+      document.getElementById("insurance-monthly").textContent = formatCurrency(insuranceMonthly);
+      document.getElementById("hoa-monthly").textContent = formatCurrency(hoaMonth);
+      document.getElementById("monthly-total").textContent = formatCurrency(monthlyTotal);
+      document.getElementById("total-over-term").textContent = formatCurrency(totalOverTerm);
+
+      const summary = `Based on a loan of ${formatCurrency(loanAmount)} over ${years} year(s) at ${rateAnnual.toFixed(2)}% interest, your estimated monthly payment is ${formatCurrency(monthlyTotal)} including principal & interest plus any taxes, insurance, and strata/HOA you entered.`;
+      document.getElementById("summary-text").textContent = summary;
+    }
+
+    document.getElementById("mortgage-form").addEventListener("submit",(e)=>{
+      e.preventDefault();
+      calculate();
+    });
+    document.getElementById("calculate-btn").addEventListener("click",calculate);
+    ["price","downPayment","interest","term","taxes","insurance","hoa"].forEach(id=>{
+      document.getElementById(id).addEventListener("input",()=>window.requestAnimationFrame(calculate));
+    });
+    document.getElementById("year").textContent = new Date().getFullYear();
+    calculate();
+  </script>
+</body>
+</html>

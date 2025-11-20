@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Login</title>
+  <style>
+    body{font-family:system-ui,Arial,sans-serif;background:#0b0b0b;color:#f5f5f5;margin:0;display:grid;place-items:center;min-height:100vh}
+    .card{background:#171717;border:1px solid #2a2a2a;border-radius:12px;padding:1.25rem;max-width:420px;width:92%}
+    label{display:block;margin:.5rem 0 .25rem}.muted{opacity:.8}
+    input{width:100%;background:#111;border:1px solid #2a2a2a;color:#f5f5f5;border-radius:8px;padding:.6rem}
+    button{margin-top:.8rem;padding:.6rem 1rem;border-radius:8px;border:1px solid #2a2a2a;background:#222;color:#fff;cursor:pointer}
+    .err{color:#ff6b6b;margin-top:.5rem}
+    .ok{color:#5ddf8f;margin-top:.5rem}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Admin Login</h2>
+    <p class="muted">Sign in to access admin pages.</p>
+    <label>Email</label>
+    <input id="email" type="email" placeholder="admin@example.com" autocomplete="username" />
+    <label>Password</label>
+    <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+    <button id="loginBtn">Sign in</button>
+    <div id="msg" class="muted"></div>
+
+    <details style="margin-top:.75rem">
+      <summary class="muted">Have a JWT already?</summary>
+      <label>Paste token</label>
+      <input id="token" type="text" placeholder="eyJhbGciOi..." />
+      <button id="useTokenBtn" style="margin-top:.5rem">Use this token</button>
+    </details>
+  </div>
+
+<script>
+(function(){
+  const API = "/.netlify/functions/admin-login";
+  function qs(id){ return document.getElementById(id); }
+  function setMsg(t, ok=false){ const el = qs('msg'); el.textContent = t; el.className = ok ? 'ok' : 'err'; }
+
+  async function login(){
+    const email = qs('email').value.trim();
+    const password = qs('password').value;
+    setMsg("");
+    try{
+      const res = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
+      const data = await res.json();
+      if(!res.ok){ setMsg(data.error || 'Login failed'); return; }
+      localStorage.setItem('jwt', data.token);
+      setMsg('Logged in. Redirecting…', true);
+      const next = new URLSearchParams(location.search).get('next') || '/admin-dashboard.html';
+      location.href = next;
+    }catch(e){ setMsg('Network error'); }
+  }
+
+  function useToken(){
+    const t = qs('token').value.trim();
+    if(!t){ setMsg('Token required'); return; }
+    try { localStorage.setItem('jwt', t); setMsg('Token saved. Redirecting…', true); location.href = '/admin-dashboard.html'; }
+    catch(e){ setMsg('Could not store token'); }
+  }
+
+  qs('loginBtn').addEventListener('click', login);
+  qs('useTokenBtn').addEventListener('click', useToken);
+})();
+</script>
+<!-- Injected: admin logout control -->
+<script>
+(function(){
+  function getToken(){
+    try {
+      return localStorage.getItem('jwt')
+          || localStorage.getItem('token')
+          || localStorage.getItem('authToken')
+          || new URLSearchParams(location.search).get('token')
+          || '';
+    } catch { return ''; }
+  }
+  function parseJwt(t){
+    try {
+      const p = t.split('.')[1]; if (!p) return {};
+      return JSON.parse(decodeURIComponent(atob(p.replace(/-/g,'+').replace(/_/g,'/')).split('').map(function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)}).join('')));
+    } catch { return {}; }
+  }
+  function isAdmin(){
+    const tok = getToken();
+    if (!tok) return false;
+    try { const c = parseJwt(tok); return String((c.role||'').toLowerCase()) === 'admin'; } catch { return false; }
+  }
+
+  function injectLogout(){
+    if (!isAdmin()) return;
+    // Try to place inside an existing nav; otherwise float top-right.
+    let container = document.querySelector('nav, header, .topbar, .navbar');
+    const btn = document.createElement('button');
+    btn.id = 'adminLogoutBtn';
+    btn.textContent = 'Logout';
+    btn.style.cssText = 'margin-left:auto;padding:.35rem .7rem;border:1px solid #2a2a2a;border-radius:8px;background:#222;color:#fff;cursor:pointer';
+    btn.addEventListener('click', async function(){
+      try { await fetch('/.netlify/functions/admin-logout', { method:'POST' }); } catch(e) {}
+      try { localStorage.removeItem('jwt'); localStorage.removeItem('token'); localStorage.removeItem('authToken'); } catch(e){}
+      const url = new URL('/admin-login.html', location.origin);
+      location.replace(url.toString());
+    });
+
+    if (!document.getElementById('adminLogoutBtn')) {
+      if (container) {
+        // Prefer putting it at the end of nav
+        container.appendChild(btn);
+      } else {
+        // Fallback: fixed position
+        btn.style.position = 'fixed';
+        btn.style.top = '10px';
+        btn.style.right = '10px';
+        document.body.appendChild(btn);
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectLogout);
+  } else {
+    injectLogout();
+  }
+})();
+</script>
+</body>
+</html>

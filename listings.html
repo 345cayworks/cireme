@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CIREME – Browse Listings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg: #050505;
+      --card: #181818;
+      --section: #111111;
+      --gold: #d4af37;
+      --gold-soft: #f0d680;
+      --text: #f5f5f5;
+      --muted: #b3b3b3;
+      --border: #2a2a2a;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top left,#202020 0,#050505 55%,#000 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+    .container{
+      max-width:1120px;
+      margin:0 auto;
+      padding:1.5rem 1.25rem 3rem;
+    }
+    a{color:inherit;text-decoration:none;}
+    header{
+      border-bottom:1px solid rgba(212,175,55,0.35);
+      padding-bottom:0.9rem;
+      margin-bottom:1.2rem;
+    }
+    .top-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:0.8rem;
+      font-size:0.85rem;
+    }
+    .home-link a{
+      color:var(--gold-soft);
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+    h1{margin-top:0.7rem;font-size:1.5rem;}
+    .subtitle{margin-top:0.3rem;font-size:0.92rem;color:var(--muted);max-width:40rem;}
+    .filters{
+      margin-top:1rem;
+      background:var(--section);
+      border-radius:14px;
+      border:1px solid var(--border);
+      padding:0.85rem 1rem 0.9rem;
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:0.75rem 1rem;
+      font-size:0.85rem;
+    }
+    @media(max-width:900px){.filters{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media(max-width:600px){.filters{grid-template-columns:minmax(0,1fr);}}
+    .filter-group{display:flex;flex-direction:column;gap:0.2rem;}
+    label{font-size:0.84rem;}
+    select,input{
+      padding:0.38rem 0.5rem;
+      border-radius:8px;
+      border:1px solid var(--border);
+      background:#111;
+      color:var(--text);
+      font-size:0.85rem;
+      outline:none;
+    }
+    select:focus,input:focus{
+      border-color:var(--gold);
+      box-shadow:0 0 0 1px rgba(212,175,55,0.4);
+      background:#151515;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:0.4rem 0.85rem;
+      border-radius:999px;
+      border:1px solid var(--gold);
+      font-size:0.8rem;
+      color:var(--gold-soft);
+      background:transparent;
+      cursor:pointer;
+      transition:background .15s ease,transform .15s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{background:rgba(212,175,55,0.1);transform:translateY(-1px);}
+    .btn-row{display:flex;align-items:center;gap:0.5rem;justify-content:flex-end;}
+    .results-meta{margin-top:1.1rem;font-size:0.84rem;color:var(--muted);}
+    .grid{
+      margin-top:0.9rem;
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:1rem;
+    }
+    @media(max-width:1024px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media(max-width:640px){.grid{grid-template-columns:minmax(0,1fr);}}
+    .card{
+      background:var(--card);
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.05);
+      padding:0.85rem 0.9rem 1rem;
+      font-size:0.84rem;
+      box-shadow:0 8px 24px rgba(0,0,0,0.7);
+      display:flex;
+      flex-direction:column;
+      gap:0.3rem;
+    }
+    .card-top{
+      display:flex;
+      justify-content:space-between;
+      gap:0.6rem;
+      align-items:flex-start;
+    }
+    .price{font-size:0.98rem;font-weight:600;color:var(--gold-soft);}
+    .address{font-size:0.86rem;}
+    .district{
+      font-size:0.76rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+    }
+    .meta-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:0.35rem;
+      margin-top:0.2rem;
+    }
+    .pill{
+      font-size:0.76rem;
+      border-radius:999px;
+      border:1px solid var(--border);
+      padding:0.1rem 0.5rem;
+      color:var(--muted);
+    }
+    .status-pill{
+      border-color:rgba(212,175,55,0.5);
+      color:var(--gold-soft);
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+    }
+    .empty{
+      margin-top:1rem;
+      padding:0.9rem 1rem;
+      border-radius:12px;
+      border:1px dashed var(--border);
+      background:rgba(0,0,0,0.4);
+      font-size:0.86rem;
+      color:var(--muted);
+    }
+    footer{
+      margin-top:2rem;
+      font-size:0.75rem;
+      color:var(--muted);
+      text-align:center;
+      border-top:1px solid var(--border);
+      padding-top:0.8rem;
+    }
+  
+    .site-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:1rem 5vw;
+      background:linear-gradient(to right,#000000dd,#111111dd);
+      border-bottom:1px solid #333;
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter:blur(10px);
+    }
+    .logo{
+      font-weight:700;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:var(--gold);
+    }
+    .logo span{
+      color:var(--text);
+      font-weight:400;
+    }
+    .main-nav{
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+    }
+    .nav-link{
+      margin-left:1rem;
+      font-size:0.9rem;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      position:relative;
+      cursor:pointer;
+      color:var(--muted);
+    }
+    .nav-link:hover{
+      color:var(--gold-soft);
+      text-decoration:none;
+    }
+    .nav-group{
+      position:relative;
+    }
+    .nav-dropdown{
+      position:absolute;
+      top:100%;
+      right:0;
+      min-width:210px;
+      background:#050505;
+      border-radius:10px;
+      border:1px solid #333;
+      box-shadow:0 14px 30px rgba(0,0,0,0.7);
+      padding:0.4rem 0;
+      display:none;
+      z-index:30;
+    }
+    .nav-dropdown a{
+      display:block;
+      padding:0.45rem 0.9rem;
+      margin:0;
+      font-size:0.8rem;
+      text-transform:none;
+      letter-spacing:0.03em;
+      color:var(--text);
+      white-space:nowrap;
+    }
+    .nav-dropdown a:hover{
+      background:rgba(212,175,55,0.12);
+      text-decoration:none;
+    }
+    .nav-group:hover>.nav-dropdown{
+      display:block;
+    }
+
+    .btn-projection{
+      display:inline-block;
+      padding:0.35rem 0.85rem;
+      border-radius:999px;
+      border:1px solid var(--gold);
+      font-size:0.76rem;
+      color:var(--gold-soft);
+      background:#111;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      transition:background 0.15s ease,transform 0.15s ease;
+    }
+    .btn-projection:hover{
+      background:rgba(212,175,55,0.1);
+      text-decoration:none;
+      transform:translateY(-1px);
+    }
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo">CIREME <span>MLS</span></div>
+    <nav class="main-nav">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="listings.html" class="nav-link">Listings</a>
+
+      <div class="nav-group">
+        <span class="nav-link nav-label">Tools ▾</span>
+        <div class="nav-dropdown">
+          <a href="mortgage-calculator.html">Mortgage Calculator</a>
+          <a href="projection.html">Value Projections</a>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-link nav-label">Login ▾</span>
+        <div class="nav-dropdown">
+          <a href="agent-dashboard.html">Agent Login</a>
+          <a href="admin-dashboard.html">Admin Login</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="page-header">
+      <div class="top-row">
+        <div class="home-link">
+          <a href="index.html">&larr; Back to Home</a>
+        </div>
+        <div>Live view of active listings from the CIREME MLS (Neon Postgres).</div>
+      </div>
+      <h1>Browse Cayman Islands Listings</h1>
+      <p class="subtitle">
+        Filter by district and price range to explore active properties.
+      </p>
+    </div>
+
+    <section class="filters" aria-label="Filters">
+      <div class="filter-group">
+        <label for="district">District</label>
+        <select id="district">
+          <option value="">All districts</option>
+          <option value="George Town">George Town</option>
+          <option value="West Bay">West Bay</option>
+          <option value="Bodden Town">Bodden Town</option>
+          <option value="North Side">North Side</option>
+          <option value="East End">East End</option>
+          <option value="Sister Islands">Sister Islands</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="minPrice">Min price (CI$)</label>
+        <input id="minPrice" type="number" min="0" step="50000" placeholder="300000">
+      </div>
+      <div class="filter-group">
+        <label for="maxPrice">Max price (CI$)</label>
+        <input id="maxPrice" type="number" min="0" step="50000" placeholder="1500000">
+      </div>
+      <div class="filter-group">
+        <label>&nbsp;</label>
+        <div class="btn-row">
+          <button type="button" class="btn" id="applyFilters">Apply</button>
+          <button class="btn" id="clearFilters" type="button" style="border-style:dashed;">Clear</button>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Listings">
+      <div id="resultsMeta" class="results-meta">Loading listings…</div>
+      <div id="grid" class="grid"></div>
+      <div id="empty" class="empty" style="display:none;">
+        No listings found for these filters. Try adjusting the district or price range.
+      </div>
+    </section>
+
+    <footer>
+      &copy; <span id="year"></span> CIREME – Cayman Islands Real Estate Market Explorer.
+    </footer>
+  </div>
+
+  <script>
+    const API = "/.netlify/functions/listings";
+    const grid = document.getElementById("grid");
+    const meta = document.getElementById("resultsMeta");
+    const empty = document.getElementById("empty");
+
+    function formatCurrency(v){
+      if(v==null) return "CI$ –";
+      const n = Number(v);
+      if(isNaN(n)) return "CI$ –";
+      return "CI$ " + n.toLocaleString("en-KY",{maximumFractionDigits:0});
+    }
+
+    function renderCard(l){
+      const el = document.createElement("article");
+      el.className = "card";
+
+      const bits = [];
+      if(l.bedrooms!=null) bits.push(l.bedrooms + " bed");
+      if(l.bathrooms!=null) bits.push(l.bathrooms + " bath");
+      if(l.square_feet!=null) bits.push(l.square_feet + " sq ft");
+
+      const price = l.list_price || "";
+      const district = l.district || "";
+      const ptype = l.property_type || "";
+
+      const projectionUrl =
+        `projection.html?district=${encodeURIComponent(district)}&price=${encodeURIComponent(price)}&ptype=${encodeURIComponent(ptype)}`;
+
+      el.innerHTML = `
+        <div class="card-top">
+          <div>
+            <div class="price">${formatCurrency(l.list_price)}</div>
+            <div class="address">${l.address || "Address available on request"}</div>
+          </div>
+          <div class="district">${l.district || "Cayman Islands"}</div>
+        </div>
+        <div class="meta-row">
+          ${bits.map(b => `<span class="pill">${b}</span>`).join("")}
+        </div>
+        <div class="meta-row" style="justify-content:space-between;margin-top:0.25rem;">
+          <span class="pill">Type: ${l.property_type || "N/A"}</span>
+          <span class="pill status-pill">${(l.status || "active").toUpperCase()}</span>
+        </div>
+        <div class="meta-row" style="margin-top:0.6rem;">
+          <a class="btn-projection" href="${projectionUrl}">
+            View 5-Year Projection →
+          </a>
+        </div>
+      `;
+      grid.appendChild(el);
+    }
+
+
+    async function fetchListings(){
+      const district = document.getElementById("district").value;
+      const minPrice = document.getElementById("minPrice").value;
+      const maxPrice = document.getElementById("maxPrice").value;
+      const params = new URLSearchParams();
+      if(district) params.append("district",district);
+      if(minPrice) params.append("minPrice",minPrice);
+      if(maxPrice) params.append("maxPrice",maxPrice);
+
+      meta.textContent = "Loading listings…";
+      grid.innerHTML = "";
+      empty.style.display = "none";
+
+      try{
+        const res = await fetch(API + (params.toString() ? "?" + params.toString() : ""));
+        if(!res.ok) throw new Error("Request failed");
+        const data = await res.json();
+        if(!data || data.length===0){
+          meta.textContent = "No listings match your filters.";
+          empty.style.display = "block";
+          return;
+        }
+        meta.textContent = `Showing ${data.length} active listing(s).`;
+        data.forEach(renderCard);
+      }catch(e){
+        console.error(e);
+        meta.textContent = "Error loading listings.";
+      }
+    }
+
+    document.getElementById("applyFilters").addEventListener("click",e=>{
+      e.preventDefault();
+      fetchListings();
+    });
+    document.getElementById("clearFilters").addEventListener("click",()=>{
+      document.getElementById("district").value = "";
+      document.getElementById("minPrice").value = "";
+      document.getElementById("maxPrice").value = "";
+      fetchListings();
+    });
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+    fetchListings();
+  </script>
+
+<!-- Injected: build projection links with defaults + autostart -->
+<script>
+  function projectionUrl(l) {
+    const params = new URLSearchParams({
+      district: l.district || '',
+      ptype: (l.property_type || '').toString(),
+      price: String(l.list_price || 0),
+      down: '20', rate: '6.0', term: '30',
+      tax: '0', hoa: '0', ins: '0',
+      horizon: '5', autostart: '1'
+    });
+    return `projection.html?${params.toString()}`;
+  }
+  (function(){
+    function qsa(sel,ctx){ return Array.from((ctx||document).querySelectorAll(sel)); }
+    function buildFromCard(card){
+      const price = card.querySelector('[data-price]')?.getAttribute('data-price')
+        || card.querySelector('.price, [data-list-price]')?.textContent?.replace(/[^0-9.]/g,'')
+        || '';
+      const district = card.querySelector('[data-district]')?.getAttribute('data-district')
+        || card.querySelector('.district, .muted')?.textContent?.trim()
+        || '';
+      const ptype = card.querySelector('[data-property-type]')?.getAttribute('data-property-type')
+        || card.querySelector('.pill, .type')?.textContent?.trim()
+        || '';
+      const params = new URLSearchParams({
+        district: district || '',
+        ptype: ptype || '',
+        price: String(price || 0),
+        down: '20', rate: '6.0', term: '30',
+        tax: '0', hoa: '0', ins: '0',
+        horizon: '5', autostart: '1'
+      });
+      return 'projection.html?' + params.toString();
+    }
+    function fixLinks(){
+      qsa('a[href^="projection.html"]').forEach(a => {
+        const card = a.closest('.card') || a.parentElement;
+        try { a.href = buildFromCard(card || document); } catch(e){ /* noop */ }
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fixLinks); else fixLinks();
+  })();
+</script>
+
+
+
+<!-- Injected: admin visibility control w/ redirect -->
+<script>
+(function(){
+  function getToken(){
+    try {
+      return localStorage.getItem('jwt')
+          || localStorage.getItem('token')
+          || localStorage.getItem('authToken')
+          || new URLSearchParams(location.search).get('token')
+          || '';
+    } catch { return ''; }
+  }
+  function parseJwt(t){
+    try {
+      const p = t.split('.')[1]; if (!p) return {};
+      return JSON.parse(decodeURIComponent(atob(p.replace(/-/g,'+').replace(/_/g,'/')).split('').map(function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)}).join('')));
+    } catch { return {}; }
+  }
+  function isAdmin(){
+    const tok = getToken();
+    if (!tok) return false;
+    try { const c = parseJwt(tok); return String((c.role||'').toLowerCase()) === 'admin'; } catch { return false; }
+  }
+  function hideNonAdmin(){
+    const adminOnly = document.querySelectorAll('[data-requires=\"admin\"], [data-role=\"admin\"]');
+    adminOnly.forEach(el => { if (!isAdmin()) el.style.display = 'none'; });
+    const needles = [/listing\\s*overview/i, /user\\s*management/i];
+    document.querySelectorAll('a, li, nav *').forEach(el => {
+      const t = (el.textContent||'').trim();
+      if (t && needles.some(rx => rx.test(t)) && !isAdmin()) el.style.display = 'none';
+    });
+  }
+  function guardAdminPage(){
+    const adminPages = [/admin-dashboard\\.html/i, /admin-users\\.html/i];
+    const path = location.pathname.toLowerCase();
+    if (adminPages.some(rx => rx.test(path)) && !isAdmin()) {
+      const next = encodeURIComponent(location.pathname + location.search);
+      location.replace('/admin-login.html?next=' + next);
+    }
+  }
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ hideNonAdmin(); guardAdminPage(); });
+  } else { hideNonAdmin(); guardAdminPage(); }
+})();
+</script>
+
+<!-- Injected: admin logout control -->
+<script>
+(function(){
+  function getToken(){
+    try {
+      return localStorage.getItem('jwt')
+          || localStorage.getItem('token')
+          || localStorage.getItem('authToken')
+          || new URLSearchParams(location.search).get('token')
+          || '';
+    } catch { return ''; }
+  }
+  function parseJwt(t){
+    try {
+      const p = t.split('.')[1]; if (!p) return {};
+      return JSON.parse(decodeURIComponent(atob(p.replace(/-/g,'+').replace(/_/g,'/')).split('').map(function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)}).join('')));
+    } catch { return {}; }
+  }
+  function isAdmin(){
+    const tok = getToken();
+    if (!tok) return false;
+    try { const c = parseJwt(tok); return String((c.role||'').toLowerCase()) === 'admin'; } catch { return false; }
+  }
+
+  function injectLogout(){
+    if (!isAdmin()) return;
+    // Try to place inside an existing nav; otherwise float top-right.
+    let container = document.querySelector('nav, header, .topbar, .navbar');
+    const btn = document.createElement('button');
+    btn.id = 'adminLogoutBtn';
+    btn.textContent = 'Logout';
+    btn.style.cssText = 'margin-left:auto;padding:.35rem .7rem;border:1px solid #2a2a2a;border-radius:8px;background:#222;color:#fff;cursor:pointer';
+    btn.addEventListener('click', async function(){
+      try { await fetch('/.netlify/functions/admin-logout', { method:'POST' }); } catch(e) {}
+      try { localStorage.removeItem('jwt'); localStorage.removeItem('token'); localStorage.removeItem('authToken'); } catch(e){}
+      const url = new URL('/admin-login.html', location.origin);
+      location.replace(url.toString());
+    });
+
+    if (!document.getElementById('adminLogoutBtn')) {
+      if (container) {
+        // Prefer putting it at the end of nav
+        container.appendChild(btn);
+      } else {
+        // Fallback: fixed position
+        btn.style.position = 'fixed';
+        btn.style.top = '10px';
+        btn.style.right = '10px';
+        document.body.appendChild(btn);
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectLogout);
+  } else {
+    injectLogout();
+  }
+})();
+</script>
+</body>
+</html>

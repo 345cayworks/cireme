@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CIREME – Cayman Islands Real Estate Market Explorer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #050505;
+      --bg-alt: #111111;
+      --card: #181818;
+      --gold: #d4af37;
+      --gold-soft: #f5e3a1;
+      --text: #f5f5f5;
+      --muted: #aaaaaa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #222 0, #050505 55%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    a { color: var(--gold-soft); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 5vw;
+      background: linear-gradient(to right, #000000dd, #111111dd);
+      border-bottom: 1px solid #333;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+    .logo {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .logo span { color: var(--text); font-weight: 400; }
+    nav a {
+      margin-left: 1rem;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    main {
+      padding: 2rem 5vw 3rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 2rem;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid #333;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    h1 {
+      font-size: clamp(2rem, 3vw + 1rem, 2.7rem);
+      margin: 0 0 0.5rem;
+    }
+    h1 span {
+      color: var(--gold-soft);
+    }
+    .hero-sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 34rem;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1.2rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      border: 1px solid var(--gold);
+      background: #111;
+      color: var(--gold-soft);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, #d4af37, #f7e58b);
+      color: #000;
+      border-color: transparent;
+      box-shadow: 0 0 20px rgba(212,175,55,0.4);
+    }
+    .btn.primary:hover {
+      box-shadow: 0 0 26px rgba(212,175,55,0.7);
+      transform: translateY(-1px);
+    }
+    .btn.secondary:hover {
+      background: #181818;
+      transform: translateY(-1px);
+    }
+
+    .hero-card {
+      background: linear-gradient(145deg, #141414, #050505);
+      border-radius: 18px;
+      border: 1px solid #2a2a2a;
+      padding: 1.3rem 1.5rem;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.55);
+    }
+    .hero-metric {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .hero-figure {
+      font-size: 1.6rem;
+      margin: 0.4rem 0 0.2rem;
+      color: var(--gold-soft);
+    }
+    .hero-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.2rem;
+      margin-top: 2.5rem;
+    }
+    .card {
+      background: linear-gradient(145deg, #141414, #050505);
+      border-radius: 18px;
+      border: 1px solid #2a2a2a;
+      padding: 1.1rem 1.2rem;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.5);
+    }
+    .card h3 {
+      margin: 0 0 0.3rem;
+      font-size: 1.05rem;
+    }
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .card-footer {
+      margin-top: 0.7rem;
+      font-size: 0.85rem;
+    }
+
+    .section-title {
+      margin-top: 2.5rem;
+      margin-bottom: 0.8rem;
+      font-size: 1.2rem;
+      color: var(--gold-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 500;
+    }
+
+    footer {
+      border-top: 1px solid #222;
+      padding: 1rem 5vw 1.4rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+    @media (max-width: 768px) {
+      header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+      nav { display: flex; flex-wrap: wrap; }
+      .grid { grid-template-columns: minmax(0, 1fr); }
+    }
+  
+    .site-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:1rem 5vw;
+      background:linear-gradient(to right,#000000dd,#111111dd);
+      border-bottom:1px solid #333;
+      position:sticky;
+      top:0;
+      z-index:20;
+      backdrop-filter:blur(10px);
+    }
+    .logo{
+      font-weight:700;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:var(--gold);
+    }
+    .logo span{
+      color:var(--text);
+      font-weight:400;
+    }
+    .main-nav{
+      display:flex;
+      align-items:center;
+      gap:0.5rem;
+    }
+    .nav-link{
+      margin-left:1rem;
+      font-size:0.9rem;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      position:relative;
+      cursor:pointer;
+      color:var(--muted);
+    }
+    .nav-link:hover{
+      color:var(--gold-soft);
+      text-decoration:none;
+    }
+    .nav-group{
+      position:relative;
+    }
+    .nav-dropdown{
+      position:absolute;
+      top:100%;
+      right:0;
+      min-width:210px;
+      background:#050505;
+      border-radius:10px;
+      border:1px solid #333;
+      box-shadow:0 14px 30px rgba(0,0,0,0.7);
+      padding:0.4rem 0;
+      display:none;
+      z-index:30;
+    }
+    .nav-dropdown a{
+      display:block;
+      padding:0.45rem 0.9rem;
+      margin:0;
+      font-size:0.8rem;
+      text-transform:none;
+      letter-spacing:0.03em;
+      color:var(--text);
+      white-space:nowrap;
+    }
+    .nav-dropdown a:hover{
+      background:rgba(212,175,55,0.12);
+      text-decoration:none;
+    }
+    .nav-group:hover>.nav-dropdown{
+      display:block;
+    }
+</style>
+</head>
+<body>
+    <header class="site-header">
+    <div class="logo">CIREME <span>MLS</span></div>
+    <nav class="main-nav">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="listings.html" class="nav-link">Listings</a>
+
+      <div class="nav-group">
+        <span class="nav-link nav-label">Tools ▾</span>
+        <div class="nav-dropdown">
+          <a href="find-agent.html">Find an Agent</a>
+          <a href="mortgage-calculator.html">Mortgage Calculator</a>
+          <a href="projection.html">Value Projections</a>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-link nav-label">Login ▾</span>
+        <div class="nav-dropdown">
+          <a href="agent-dashboard.html">Agent Login</a>
+          <a href="admin-dashboard.html">Admin Login</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+
+  <main>
+    <section class="hero">
+      <div>
+        <div class="badge">
+          Cayman Islands • Data-driven Real Estate
+        </div>
+        <h1>
+          Cayman Islands Real Estate Market <span>Explorer</span>
+        </h1>
+        <p class="hero-sub">
+          CIREME connects live listings, banking tools, and the official Lands &amp; Survey
+          Residential Property Price Index (RPPI) to give buyers, sellers, investors, and agents
+          a clear view of the Cayman market.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="listings.html">Browse Listings</a>
+          <a class="btn secondary" href="projection.html">View Value Projections</a>
+          <a class="btn secondary" href="mortgage-calculator.html">Estimate Mortgage</a>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <div class="hero-metric">Smart insights</div>
+        <p class="hero-figure">RPPI-backed projections</p>
+        <p class="hero-desc">
+          Use Cayman&apos;s official residential price index to explore how today&apos;s listing
+          price could evolve over the next 5 years, district by district.
+        </p>
+        <hr style="border:none;border-top:1px solid #333;margin:0.9rem 0;">
+        <p class="hero-metric">For agents &amp; agencies</p>
+        <p class="hero-desc">
+          Log in to manage your listings, media, and client leads through the
+          CIREME agent dashboard.
+        </p>
+        <div style="margin-top:0.8rem;">
+          <a class="btn secondary" href="agent-dashboard.html">Open Agent Dashboard</a>
+        </div>
+      </div>
+    </section>
+
+    <h2 class="section-title">Explore tools</h2>
+    <section class="grid">
+      <article class="card">
+        <h3>Listings search</h3>
+        <p>
+          Filter Cayman Islands listings by district, price, property type, and key features.
+          Each listing is media-ready and lead-enabled.
+        </p>
+        <div class="card-footer">
+          <a href="listings.html">Go to listings →</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <h3>RPPI value projections</h3>
+        <p>
+          Combine a current listing price with historical RPPI trends to see conservative, base,
+          and aggressive 5-year scenarios for each district.
+        </p>
+        <div class="card-footer">
+          <a href="projection.html">Open projections →</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <h3>Mortgage calculator</h3>
+        <p>
+          Estimate monthly payments in CI$ with interest rate, term length, and down payment,
+          ready to share with banks and finance partners.
+        </p>
+        <div class="card-footer">
+          <a href="mortgage-calculator.html">Estimate mortgage →</a>
+        </div>
+      </article>
+    </section>
+
+    <h2 class="section-title">For professionals</h2>
+    <section class="grid">
+      <article class="card">
+        <h3>Agents &amp; brokers</h3>
+        <p>
+          Secure agent dashboard to create listings, upload media, and manage incoming leads from
+          the CIREME platform.
+        </p>
+        <div class="card-footer">
+          <a href="agent-dashboard.html">Agent dashboard →</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <h3>Admin / platform management</h3>
+        <p>
+          Admin tools to approve listings, manage agents, and oversee the integrity of the MLS data.
+        </p>
+        <div class="card-footer">
+          <a href="admin-dashboard.html">Admin dashboard →</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <h3>Data &amp; banking partners</h3>
+        <p>
+          The platform is designed to integrate with local banks, valuers, and government datasets
+          to keep market signals accurate and up to date.
+        </p>
+        <div class="card-footer">
+          <a href="projection.html">View data-driven tools →</a>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <div>© <span id="year"></span> CIREME – Cayman Islands Real Estate Market Explorer.</div>
+    <div>Powered by NB Solutions • Data from Lands &amp; Survey RPPI where available.</div>
+  </footer>
+
+  <script>
+    // Simple current year in footer
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
+
+<!-- Injected: admin visibility control w/ redirect -->
+<script>
+(function(){
+  function getToken(){
+    try {
+      return localStorage.getItem('jwt')
+          || localStorage.getItem('token')
+          || localStorage.getItem('authToken')
+          || new URLSearchParams(location.search).get('token')
+          || '';
+    } catch { return ''; }
+  }
+  function parseJwt(t){
+    try {
+      const p = t.split('.')[1]; if (!p) return {};
+      return JSON.parse(decodeURIComponent(atob(p.replace(/-/g,'+').replace(/_/g,'/')).split('').map(function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)}).join('')));
+    } catch { return {}; }
+  }
+  function isAdmin(){
+    const tok = getToken();
+    if (!tok) return false;
+    try { const c = parseJwt(tok); return String((c.role||'').toLowerCase()) === 'admin'; } catch { return false; }
+  }
+  function hideNonAdmin(){
+    const adminOnly = document.querySelectorAll('[data-requires=\"admin\"], [data-role=\"admin\"]');
+    adminOnly.forEach(el => { if (!isAdmin()) el.style.display = 'none'; });
+    const needles = [/listing\\s*overview/i, /user\\s*management/i];
+    document.querySelectorAll('a, li, nav *').forEach(el => {
+      const t = (el.textContent||'').trim();
+      if (t && needles.some(rx => rx.test(t)) && !isAdmin()) el.style.display = 'none';
+    });
+  }
+  function guardAdminPage(){
+    const adminPages = [/admin-dashboard\\.html/i, /admin-users\\.html/i];
+    const path = location.pathname.toLowerCase();
+    if (adminPages.some(rx => rx.test(path)) && !isAdmin()) {
+      const next = encodeURIComponent(location.pathname + location.search);
+      location.replace('/admin-login.html?next=' + next);
+    }
+  }
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', function(){ hideNonAdmin(); guardAdminPage(); });
+  } else { hideNonAdmin(); guardAdminPage(); }
+})();
+</script>
+
+<!-- Injected: admin logout control -->
+<script>
+(function(){
+  function getToken(){
+    try {
+      return localStorage.getItem('jwt')
+          || localStorage.getItem('token')
+          || localStorage.getItem('authToken')
+          || new URLSearchParams(location.search).get('token')
+          || '';
+    } catch { return ''; }
+  }
+  function parseJwt(t){
+    try {
+      const p = t.split('.')[1]; if (!p) return {};
+      return JSON.parse(decodeURIComponent(atob(p.replace(/-/g,'+').replace(/_/g,'/')).split('').map(function(c){return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)}).join('')));
+    } catch { return {}; }
+  }
+  function isAdmin(){
+    const tok = getToken();
+    if (!tok) return false;
+    try { const c = parseJwt(tok); return String((c.role||'').toLowerCase()) === 'admin'; } catch { return false; }
+  }
+
+  function injectLogout(){
+    if (!isAdmin()) return;
+    // Try to place inside an existing nav; otherwise float top-right.
+    let container = document.querySelector('nav, header, .topbar, .navbar');
+    const btn = document.createElement('button');
+    btn.id = 'adminLogoutBtn';
+    btn.textContent = 'Logout';
+    btn.style.cssText = 'margin-left:auto;padding:.35rem .7rem;border:1px solid #2a2a2a;border-radius:8px;background:#222;color:#fff;cursor:pointer';
+    btn.addEventListener('click', async function(){
+      try { await fetch('/.netlify/functions/admin-logout', { method:'POST' }); } catch(e) {}
+      try { localStorage.removeItem('jwt'); localStorage.removeItem('token'); localStorage.removeItem('authToken'); } catch(e){}
+      const url = new URL('/admin-login.html', location.origin);
+      location.replace(url.toString());
+    });
+
+    if (!document.getElementById('adminLogoutBtn')) {
+      if (container) {
+        // Prefer putting it at the end of nav
+        container.appendChild(btn);
+      } else {
+        // Fallback: fixed position
+        btn.style.position = 'fixed';
+        btn.style.top = '10px';
+        btn.style.right = '10px';
+        document.body.appendChild(btn);
+      }
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectLogout);
+  } else {
+    injectLogout();
+  }
+})();
+</script>
+</body>
+</html>
