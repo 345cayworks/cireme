@@ -1,0 +1,42 @@
+{
+  "source": "manual-fallback",
+  "asOf": 2024,
+  "method": "Percentiles from historical annual % changes.",
+  "annualStats": {
+    "Total Cayman Islands": {
+      "mean": 0.085,
+      "p10": 0.03,
+      "p50": 0.08,
+      "p90": 0.12,
+      "n": 5
+    },
+    "George Town": {
+      "mean": 0.09,
+      "p10": 0.04,
+      "p50": 0.09,
+      "p90": 0.14,
+      "n": 5
+    },
+    "Seven Mile Beach": {
+      "mean": 0.08,
+      "p10": 0.03,
+      "p50": 0.08,
+      "p90": 0.12,
+      "n": 5
+    },
+    "West Bay": {
+      "mean": 0.1,
+      "p10": 0.05,
+      "p50": 0.1,
+      "p90": 0.15,
+      "n": 5
+    },
+    "Other Cayman Islands": {
+      "mean": 0.07,
+      "p10": 0.02,
+      "p50": 0.07,
+      "p90": 0.11,
+      "n": 5
+    }
+  }
+}
